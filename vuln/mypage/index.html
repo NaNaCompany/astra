@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>마이페이지 · 나나 멤버스</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+       font-size:14px;line-height:1.65;color:#22303a;background:#eef2f4}
+  a{color:#177b8a;text-decoration:none} a:hover{text-decoration:underline}
+  .lab{background:#3a2a10;color:#ffd27a;font-size:12px;text-align:center;padding:6px 10px}
+  .lab b{color:#fff}
+  .top{background:#177b8a;color:#fff}
+  .top .in{max-width:940px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:18px}
+  .top .logo{font-size:19px;font-weight:800;letter-spacing:-.5px}
+  .top .logo small{font-weight:400;opacity:.8;font-size:12px;margin-left:6px}
+  .top nav{margin-left:auto;display:flex;gap:16px;font-size:13.5px}
+  .top nav a{color:#d6f0f4}
+  .wrap{max-width:940px;margin:0 auto;padding:26px 20px 60px}
+  .panel{background:#fff;border:1px solid #dbe3e7;border-radius:8px;padding:22px 24px;margin-bottom:18px}
+  .panel h2{margin:0 0 4px;font-size:16px;letter-spacing:-.3px}
+  .panel .sub{color:#8b98a0;font-size:12.5px;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid #eef2f4}
+  th{width:150px;color:#5a6a72;font-weight:600}
+  .nav2{margin-top:6px;font-size:13px}
+  .foot{max-width:940px;margin:0 auto;padding:0 20px 50px;color:#8b98a0;font-size:12px}
+  .warn{color:#b23}
+</style>
+</head>
+<body>
+
+<div class="lab">⚠ <b>취약점 진단 실습용 사이트</b>입니다. 일부러 허술하게 만든 가짜 서비스이며, 실제 회사·계정·개인정보가 아닙니다.</div>
+
+<header class="top"><div class="in">
+  <div class="logo">나나 멤버스<small>사내 커뮤니티</small></div>
+  <nav>
+    <a href="../">홈</a>
+    <a href="../board/">자유게시판</a>
+    <a href="./?uid=1001">마이페이지</a>
+  </nav>
+</div></header>
+
+<div class="wrap">
+  <div class="panel">
+    <h2 id="ttl">내 정보</h2>
+    <div class="sub" id="sub"></div>
+    <table id="info"></table>
+    <div class="nav2" id="nav2"></div>
+  </div>
+</div>
+
+<div class="foot">© 나나 멤버스 · 본 사이트의 회원·게시물·연락처는 모두 교육용으로 지어낸 것입니다.</div>
+
+<script>
+  // ---- 회원 상세 (고정) ----
+  var MEMBERS={
+    1000:{name:'시스템 관리자', role:'admin', email:'admin@nana-members.example',
+          phone:'010-0000-0000', memo:'배포 담당', apikey:'sk_demo_0000_FAKE_NOTAREALKEY'},
+    1001:{name:'홍길동', role:'member', email:'hong@nana-members.example',
+          phone:'010-1111-2222', memo:'기획팀'},
+    1002:{name:'이순신', role:'member', email:'lee@nana-members.example',
+          phone:'010-3333-4444', memo:'개발팀'},
+    1003:{name:'김유신', role:'member', email:'kim@nana-members.example',
+          phone:'010-5555-6666', memo:'디자인팀'}
+  };
+
+  function qs(k){var m=new RegExp('[?&]'+k+'=([^&]*)').exec(location.search);return m?decodeURIComponent(m[1]):null;}
+
+  var uid=qs('uid')||'1001';
+  var m=MEMBERS[uid];
+  var info=document.getElementById('info');
+
+  if(!m){
+    document.getElementById('ttl').textContent='회원 정보';
+    info.innerHTML='<tr><td class="warn">해당 회원(uid='+uid+')을 찾을 수 없습니다.</td></tr>';
+  }else{
+    document.getElementById('ttl').textContent=m.name+' 님의 정보';
+    document.getElementById('sub').textContent='회원번호 uid='+uid;
+    var rows=[
+      ['이름', m.name],
+      ['구분', m.role],
+      ['이메일', m.email],
+      ['연락처', m.phone],
+      ['메모', m.memo]
+    ];
+    if(m.apikey){ rows.push(['API 키', m.apikey]); }
+    var h='';
+    for(var i=0;i<rows.length;i++){ h+='<tr><th>'+rows[i][0]+'</th><td>'+rows[i][1]+'</td></tr>'; }
+    info.innerHTML=h;
+  }
+
+  document.getElementById('nav2').innerHTML=
+    '다른 회원: '
+    +'<a href="./?uid=1001">1001</a> · '
+    +'<a href="./?uid=1002">1002</a> · '
+    +'<a href="./?uid=1003">1003</a>';
+</script>
+</body>
+</html>

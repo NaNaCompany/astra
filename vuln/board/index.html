@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>자유게시판 · 나나 멤버스</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+       font-size:14px;line-height:1.65;color:#22303a;background:#eef2f4}
+  a{color:#177b8a;text-decoration:none} a:hover{text-decoration:underline}
+  .lab{background:#3a2a10;color:#ffd27a;font-size:12px;text-align:center;padding:6px 10px}
+  .lab b{color:#fff}
+  .top{background:#177b8a;color:#fff}
+  .top .in{max-width:940px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:18px}
+  .top .logo{font-size:19px;font-weight:800;letter-spacing:-.5px}
+  .top .logo small{font-weight:400;opacity:.8;font-size:12px;margin-left:6px}
+  .top nav{margin-left:auto;display:flex;gap:16px;font-size:13.5px}
+  .top nav a{color:#d6f0f4}
+  .wrap{max-width:940px;margin:0 auto;padding:26px 20px 60px}
+  .panel{background:#fff;border:1px solid #dbe3e7;border-radius:8px;padding:22px 24px;margin-bottom:18px}
+  .panel h2{margin:0 0 14px;font-size:16px;letter-spacing:-.3px}
+  input,textarea{padding:9px 11px;border:1px solid #c3ccd2;border-radius:6px;font-size:14px;font-family:inherit}
+  input.wide{width:200px} textarea{width:100%;min-height:64px;resize:vertical;margin-top:8px}
+  button{padding:9px 16px;border:0;border-radius:6px;background:#177b8a;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+  button.sub{background:#e7edf0;color:#33454f}
+  .cmt{border-top:1px solid #eef2f4;padding:12px 0}
+  .cmt:first-child{border-top:0}
+  .cmt .who{font-weight:700;font-size:13px;color:#33454f}
+  .cmt .when{color:#9aa7ae;font-size:12px;margin-left:8px}
+  .cmt .body{margin-top:4px}
+  .foot{max-width:940px;margin:0 auto;padding:0 20px 50px;color:#8b98a0;font-size:12px}
+</style>
+</head>
+<body>
+
+<div class="lab">⚠ <b>취약점 진단 실습용 사이트</b>입니다. 일부러 허술하게 만든 가짜 서비스이며, 실제 회사·계정·개인정보가 아닙니다.</div>
+
+<header class="top"><div class="in">
+  <div class="logo">나나 멤버스<small>사내 커뮤니티</small></div>
+  <nav>
+    <a href="../">홈</a>
+    <a href="./">자유게시판</a>
+    <a href="../mypage/?uid=1001">마이페이지</a>
+  </nav>
+</div></header>
+
+<div class="wrap">
+  <div class="panel">
+    <h2>자유게시판</h2>
+    <div class="row">
+      <input type="text" id="who" class="wide" placeholder="이름" value="">
+      <textarea id="body" placeholder="댓글을 남겨 주세요"></textarea>
+    </div>
+    <div style="margin-top:10px"><button onclick="addCmt()">등록</button>
+      <button class="sub" onclick="resetBoard()">게시판 초기화</button></div>
+  </div>
+
+  <div class="panel">
+    <div id="list"></div>
+  </div>
+</div>
+
+<div class="foot">© 나나 멤버스 · 본 사이트의 회원·게시물·연락처는 모두 교육용으로 지어낸 것입니다.</div>
+
+<script>
+  var mem={};
+  function store(k,v){try{localStorage.setItem(k,v)}catch(e){mem[k]=v}}
+  function load(k){try{var v=localStorage.getItem(k);return v===null?(k in mem?mem[k]:null):v}catch(e){return k in mem?mem[k]:null}}
+  function drop(k){try{localStorage.removeItem(k)}catch(e){}delete mem[k]}
+
+  var SEED=[
+    {who:'이순신', when:'2024-03-03', body:'게시판 새로 생겼네요. 잘 쓰겠습니다!'},
+    {who:'김유신', when:'2024-03-03', body:'점심 뭐 드셨어요? 오늘 구내식당 메뉴 괜찮던데'},
+    {who:'홍길동', when:'2024-03-04', body:'다음 주 회의 자료 공유 폴더에 올려두었습니다.'}
+  ];
+
+  function getCmts(){
+    var raw=load('nana_board');
+    if(!raw){ return SEED.slice(); }
+    try{ return JSON.parse(raw); }catch(e){ return SEED.slice(); }
+  }
+  function render(){
+    var list=getCmts(), h='';
+    for(var i=0;i<list.length;i++){
+      var c=list[i];
+      // 댓글 출력
+      h+='<div class="cmt"><span class="who">'+c.who+'</span>'
+        +'<span class="when">'+c.when+'</span>'
+        +'<div class="body">'+c.body+'</div></div>';
+    }
+    document.getElementById('list').innerHTML=h;
+  }
+  function addCmt(){
+    var who=document.getElementById('who').value||'익명';
+    var body=document.getElementById('body').value;
+    if(!body) return;
+    var list=getCmts();
+    list.push({who:who, when:'2024-03-04', body:body});
+    store('nana_board', JSON.stringify(list));
+    document.getElementById('body').value='';
+    render();
+  }
+  function resetBoard(){ drop('nana_board'); render(); }
+
+  render();
+</script>
+</body>
+</html>

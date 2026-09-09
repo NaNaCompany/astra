@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>관리자 · 나나 멤버스</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+       font-size:14px;line-height:1.65;color:#22303a;background:#eef2f4}
+  a{color:#177b8a;text-decoration:none} a:hover{text-decoration:underline}
+  .lab{background:#3a2a10;color:#ffd27a;font-size:12px;text-align:center;padding:6px 10px}
+  .lab b{color:#fff}
+  .top{background:#5a2233;color:#fff}
+  .top .in{max-width:940px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:12px}
+  .top .logo{font-size:18px;font-weight:800}
+  .top .tag{background:#7a3247;font-size:11px;padding:2px 8px;border-radius:10px}
+  .top nav{margin-left:auto;font-size:13px}.top nav a{color:#f0d6de}
+  .wrap{max-width:940px;margin:0 auto;padding:26px 20px 60px}
+  .panel{background:#fff;border:1px solid #dbe3e7;border-radius:8px;padding:22px 24px;margin-bottom:18px}
+  .panel h2{margin:0 0 14px;font-size:16px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid #eef2f4}
+  th{color:#5a6a72;background:#faf6f7}
+  code{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;background:#f4eef0;padding:2px 6px;border-radius:4px}
+  .foot{max-width:940px;margin:0 auto;padding:0 20px 50px;color:#8b98a0;font-size:12px}
+</style>
+</head>
+<body>
+
+<div class="lab">⚠ <b>취약점 진단 실습용 사이트</b>입니다. 일부러 허술하게 만든 가짜 서비스이며, 실제 회사·계정·개인정보가 아닙니다.</div>
+
+<header class="top"><div class="in">
+  <div class="logo">나나 멤버스 관리자</div>
+  <span class="tag">ADMIN</span>
+  <nav><a href="../">← 사용자 사이트로</a></nav>
+</div></header>
+
+<div class="wrap">
+  <div class="panel">
+    <h2>회원 관리</h2>
+    <table>
+      <tr><th>uid</th><th>이름</th><th>구분</th><th>이메일</th><th>연락처</th></tr>
+      <tr><td>1000</td><td>시스템 관리자</td><td>admin</td><td>admin@nana-members.example</td><td>010-0000-0000</td></tr>
+      <tr><td>1001</td><td>홍길동</td><td>member</td><td>hong@nana-members.example</td><td>010-1111-2222</td></tr>
+      <tr><td>1002</td><td>이순신</td><td>member</td><td>lee@nana-members.example</td><td>010-3333-4444</td></tr>
+      <tr><td>1003</td><td>김유신</td><td>member</td><td>kim@nana-members.example</td><td>010-5555-6666</td></tr>
+    </table>
+  </div>
+
+  <div class="panel">
+    <h2>연동 설정</h2>
+    <table>
+      <tr><th>결제 연동 키</th><td><code>sk_demo_0000_FAKE_NOTAREALKEY</code></td></tr>
+      <tr><th>문자 발송 키</th><td><code>sms_demo_0000_FAKE_NOTAREALKEY</code></td></tr>
+      <tr><th>백업 경로</th><td><code>/backup/members-2024-03.csv</code></td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="foot">© 나나 멤버스 · 본 사이트의 회원·게시물·연락처·키는 모두 교육용으로 지어낸 것입니다.</div>
+
+<!-- 이 페이지는 로그인·권한 확인 없이 그대로 열립니다. (실습 포인트) -->
+</body>
+</html>

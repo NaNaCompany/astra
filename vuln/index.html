@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>나나 멤버스</title>
+<!--
+  나나 멤버스 사내 커뮤니티 v1.2
+  TODO(배포 전 정리):
+   - 임시 관리자 계정 지우기 → admin / nanalab!admin2024
+   - 관리자 페이지(/admin) 아직 로그인 체크 안 붙임. 링크만 빼둠
+   - 회원검색 결과 출력부 이스케이프 처리 필요
+-->
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+       font-size:14px;line-height:1.65;color:#22303a;background:#eef2f4}
+  a{color:#177b8a;text-decoration:none} a:hover{text-decoration:underline}
+  .lab{background:#3a2a10;color:#ffd27a;font-size:12px;text-align:center;padding:6px 10px}
+  .lab b{color:#fff}
+  .top{background:#177b8a;color:#fff}
+  .top .in{max-width:940px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:18px}
+  .top .logo{font-size:19px;font-weight:800;letter-spacing:-.5px}
+  .top .logo small{font-weight:400;opacity:.8;font-size:12px;margin-left:6px}
+  .top nav{margin-left:auto;display:flex;gap:16px;font-size:13.5px}
+  .top nav a{color:#d6f0f4}
+  .wrap{max-width:940px;margin:0 auto;padding:26px 20px 60px}
+  .panel{background:#fff;border:1px solid #dbe3e7;border-radius:8px;padding:22px 24px;margin-bottom:18px}
+  .panel h2{margin:0 0 14px;font-size:16px;letter-spacing:-.3px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  input[type=text],input[type=password]{padding:9px 11px;border:1px solid #c3ccd2;border-radius:6px;font-size:14px;font-family:inherit}
+  input.wide{flex:1;min-width:180px}
+  button{padding:9px 16px;border:0;border-radius:6px;background:#177b8a;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+  button.sub{background:#e7edf0;color:#33454f}
+  .hint{color:#7c8a92;font-size:12.5px;margin-top:8px}
+  .out{margin-top:14px;min-height:22px;font-size:14px}
+  .card2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:640px){.card2{grid-template-columns:1fr}}
+  .notice li{margin:3px 0}
+  .me{background:#f4f8f9;border:1px solid #dbe3e7;border-radius:6px;padding:12px 14px;font-size:13px;color:#3a4a53}
+  .foot{max-width:940px;margin:0 auto;padding:0 20px 50px;color:#8b98a0;font-size:12px}
+  .rst{margin-top:20px}
+</style>
+</head>
+<body>
+
+<div class="lab">⚠ <b>취약점 진단 실습용 사이트</b>입니다. 일부러 허술하게 만든 가짜 서비스이며, 실제 회사·계정·개인정보가 아닙니다.</div>
+
+<header class="top"><div class="in">
+  <div class="logo">나나 멤버스<small>사내 커뮤니티</small></div>
+  <nav>
+    <a href="./">홈</a>
+    <a href="./board/">자유게시판</a>
+    <a href="./mypage/?uid=1001">마이페이지</a>
+  </nav>
+</div></header>
+
+<div class="wrap">
+
+  <div class="panel" id="loginPanel">
+    <h2>로그인</h2>
+    <div class="row">
+      <input type="text" id="lid" class="wide" placeholder="아이디" autocomplete="off">
+      <input type="password" id="lpw" placeholder="비밀번호" autocomplete="off">
+      <button onclick="doLogin()">로그인</button>
+    </div>
+    <div class="hint">테스트 계정: hong / 1234 · lee / 1234 · kim / 1234</div>
+    <div class="out" id="loginOut"></div>
+  </div>
+
+  <div class="panel" id="welcomePanel" style="display:none">
+    <h2>환영합니다</h2>
+    <div class="me" id="welcomeBox"></div>
+    <div class="row" style="margin-top:14px">
+      <button class="sub" onclick="doLogout()">로그아웃</button>
+    </div>
+  </div>
+
+  <div class="card2">
+    <div class="panel">
+      <h2>회원 검색</h2>
+      <div class="row">
+        <input type="text" id="q" class="wide" placeholder="이름으로 검색">
+        <button onclick="doSearch()">검색</button>
+      </div>
+      <div class="out" id="searchOut"></div>
+    </div>
+
+    <div class="panel">
+      <h2>공지사항</h2>
+      <ul class="notice">
+        <li>2024-03-04 · 사내 커뮤니티 v1.2 오픈</li>
+        <li>2024-03-02 · 마이페이지에서 연락처 수정이 가능합니다</li>
+        <li>2024-02-28 · 자유게시판 댓글 기능 추가</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rst"><button class="sub" onclick="resetAll()">이 사이트 처음 상태로 되돌리기</button></div>
+
+</div>
+
+<div class="foot">© 나나 멤버스 · 본 사이트의 회원·게시물·연락처는 모두 교육용으로 지어낸 것입니다.</div>
+
+<script>
+  // ---- 저장소 (localStorage, 실패 시 메모리) ----
+  var mem={};
+  function store(k,v){try{localStorage.setItem(k,v)}catch(e){mem[k]=v}}
+  function load(k){try{var v=localStorage.getItem(k);return v===null?(k in mem?mem[k]:null):v}catch(e){return k in mem?mem[k]:null}}
+  function drop(k){try{localStorage.removeItem(k)}catch(e){}delete mem[k]}
+
+  // ---- 회원 데이터 (고정) ----
+  var USERS=[
+    {id:'hong',pw:'1234',name:'홍길동',uid:1001},
+    {id:'lee', pw:'1234',name:'이순신',uid:1002},
+    {id:'kim', pw:'1234',name:'김유신',uid:1003}
+  ];
+
+  function doLogin(){
+    var id=document.getElementById('lid').value;
+    var pw=document.getElementById('lpw').value;
+    var u=null;
+    for(var i=0;i<USERS.length;i++){ if(USERS[i].id===id) u=USERS[i]; }
+    // 아이디/비번 확인
+    if(u && u.pw===pw || id==='admin'){
+      var role=(id==='admin')?'admin':'member';
+      store('nana_sess', JSON.stringify({id:id, name:(u?u.name:'관리자'), role:role}));
+      renderSess();
+    }else{
+      document.getElementById('loginOut').innerHTML='<span style="color:#b23">아이디 또는 비밀번호가 올바르지 않습니다.</span>';
+    }
+  }
+  function doLogout(){ drop('nana_sess'); renderSess(); document.getElementById('loginOut').innerHTML=''; }
+
+  function renderSess(){
+    var s=load('nana_sess');
+    if(s){
+      s=JSON.parse(s);
+      document.getElementById('loginPanel').style.display='none';
+      document.getElementById('welcomePanel').style.display='block';
+      var extra=(s.role==='admin')?' <b>[관리자]</b>':'';
+      document.getElementById('welcomeBox').innerHTML=s.name+' 님, 로그인되었습니다.'+extra;
+    }else{
+      document.getElementById('loginPanel').style.display='block';
+      document.getElementById('welcomePanel').style.display='none';
+    }
+  }
+
+  function doSearch(){
+    var q=document.getElementById('q').value;
+    var hit=USERS.filter(function(u){return u.name.indexOf(q)>=0});
+    var html;
+    if(hit.length){
+      html='검색 결과: '+hit.map(function(u){return u.name}).join(', ');
+    }else{
+      html='"'+q+'" 에 대한 검색 결과가 없습니다.';
+    }
+    document.getElementById('searchOut').innerHTML=html;
+  }
+
+  function resetAll(){ drop('nana_sess'); drop('nana_board'); location.reload(); }
+
+  renderSess();
+</script>
+</body>
+</html>
