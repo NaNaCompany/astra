@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>나나샵 소셜</title>
+<style>
+  :root{
+    --bg:#fafafa; --panel:#fff; --line:#e6e8eb; --line2:#f0f2f4;
+    --ink:#16181c; --ink2:#5b6470; --ink3:#8b95a1;
+    --brand:#d94a6a; --brand-d:#b93855; --brand-l:#fdeef2;
+    --ok:#1f7a4d; --danger:#c0392b; --info:#1f5fbf;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+       background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
+  a{color:var(--info);text-decoration:none}
+  button{font-family:inherit;font-size:14px;cursor:pointer}
+
+  .top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(6px)}
+  .top-in{max-width:680px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{font-size:18px;font-weight:800;letter-spacing:-.5px;color:var(--brand)}
+  .top-act{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+  .btn{padding:7px 12px;border:1px solid var(--line);background:#fff;border-radius:18px;font-size:12.5px;color:var(--ink2)}
+  .btn:hover{background:#f5f6f8}
+  .btn-p{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+  .btn-p:hover{background:var(--brand-d)}
+  .btn.on{background:var(--brand-l);border-color:#f2c8d3;color:var(--brand-d);font-weight:600}
+
+  .feed{max-width:680px;margin:0 auto;padding:18px 18px 70px}
+  .bar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink3)}
+
+  .post{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:18px;overflow:hidden}
+  .post-h{display:flex;gap:11px;align-items:center;padding:14px 16px}
+  .av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--brand),#f0a07a);color:#fff;
+      display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex:0 0 auto}
+  .av.sm{width:30px;height:30px;font-size:12px;background:#c9ced6;color:#fff}
+  .post-h .who{font-weight:700;font-size:14px}
+  .post-h .when{color:var(--ink3);font-size:12px}
+  .post-img{height:190px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:600;letter-spacing:1px}
+  .post-b{padding:14px 16px;font-size:14.5px;line-height:1.75;white-space:pre-wrap}
+  .post-tags{padding:0 16px 12px;color:var(--info);font-size:13.5px}
+  .post-meta{padding:10px 16px;border-top:1px solid var(--line2);color:var(--ink3);font-size:12.5px;display:flex;gap:16px}
+
+  .cmts{border-top:1px solid var(--line2);padding:6px 16px 14px}
+  .cmt{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--line2)}
+  .cmt:last-child{border-bottom:none}
+  .cmt .body{flex:1;min-width:0}
+  .cmt .head{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-bottom:3px}
+  .cmt .head b{font-size:13.5px}
+  .cmt .head .t{color:var(--ink3);font-size:11.5px}
+  .cmt .txt{font-size:13.5px;line-height:1.7;margin:0 0 7px;word-break:break-word}
+  .tag{display:inline-block;padding:1px 7px;border-radius:9px;font-size:11px;font-weight:700}
+  .tag-q{background:#eaf1fc;color:var(--info)}
+  .tag-b{background:#fdecea;color:var(--danger)}
+  .tag-g{background:#e7f4ed;color:var(--ok)}
+  .tag-s{background:#f0f2f4;color:var(--ink2)}
+  .reply{background:#fbfcfd;border-left:3px solid var(--brand);border-radius:0 6px 6px 0;padding:9px 12px;margin-top:7px;font-size:13.5px;line-height:1.7}
+  .reply .who{display:block;color:var(--brand-d);font-weight:700;font-size:12px;margin-bottom:2px}
+  .rform{display:flex;gap:7px;align-items:flex-start;margin-top:7px;flex-wrap:wrap}
+  .rform textarea{flex:1;min-width:200px;min-height:52px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;
+                  font-family:inherit;font-size:13.5px;resize:vertical}
+  .rform button{white-space:nowrap;padding:8px 14px;border-radius:8px}
+  .newmark{background:#fffbe6;transition:background 1.8s}
+  .empty{padding:26px 0;text-align:center;color:var(--ink3);font-size:13.5px}
+
+  .note{background:#fff;border:1px solid var(--line);border-left:3px solid #d1a24a;border-radius:0 8px 8px 0;
+        padding:13px 16px;font-size:12.5px;color:var(--ink2);line-height:1.8;margin-bottom:18px}
+  .foot{max-width:680px;margin:0 auto;padding:0 18px 40px;color:var(--ink3);font-size:12px}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#16181c;color:#fff;padding:11px 19px;
+         border-radius:20px;font-size:13.5px;box-shadow:0 4px 18px rgba(0,0,0,.22);opacity:0;pointer-events:none;
+         transition:opacity .2s,bottom .2s;z-index:60}
+  .toast.show{opacity:1;bottom:36px}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="top-in">
+    <div class="brand">나나샵 소셜</div>
+    <div class="top-act">
+      <button class="btn" id="btnAuto">자동 수신 꺼짐</button>
+      <button class="btn btn-p" id="btnNew">새 댓글 1건 받기</button>
+      <button class="btn" id="btnReset">초기화</button>
+    </div>
+  </div>
+</div>
+
+<div class="feed">
+  <div class="note">
+    <b>실습용 사이트입니다.</b> 실제 소셜 서비스가 아니며 여기 있는 계정과 댓글은 모두 가상입니다.
+    댓글은 미리 정해진 목록에서 순서대로 도착합니다. 자동 수신을 켜면 30초마다 한 건씩 들어옵니다.
+  </div>
+  <div class="bar">
+    <span id="statLine"></span>
+    <span id="autoLine"></span>
+  </div>
+  <div id="posts"></div>
+</div>
+<div class="foot">나나샵 소셜 · 실습용 페이지입니다. 실제 계정·댓글이 아닙니다.</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================================
+   나나샵 소셜 — 실습용 정적 웹앱
+   댓글은 고정 큐에서 순서대로 도착합니다. 내용과 순서는 언제나 같습니다.
+   ========================================================================= */
+
+var MEM={};
+var Store={
+  key:function(k){ return 'nanasns_'+k; },
+  get:function(k,d){ try{ var v=localStorage.getItem(this.key(k)); if(v!==null) return JSON.parse(v);}catch(e){}
+    return Object.prototype.hasOwnProperty.call(MEM,k)?MEM[k]:d; },
+  set:function(k,v){ MEM[k]=v; try{ localStorage.setItem(this.key(k),JSON.stringify(v)); }catch(e){} },
+  clear:function(){ MEM={}; try{ var del=[]; for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i);
+    if(k&&k.indexOf('nanasns_')===0) del.push(k);} del.forEach(function(k){localStorage.removeItem(k);}); }catch(e){} }
+};
+function pad(n){ return (n<10?'0':'')+n; }
+function ymd(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function ymdhm(d){ return ymd(d)+' '+pad(d.getHours())+':'+pad(d.getMinutes()); }
+function addDays(d,n){ var x=new Date(d.getTime()); x.setDate(x.getDate()+n); return x; }
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+function toast(m){ var t=document.getElementById('toast'); t.textContent=m; t.classList.add('show');
+  clearTimeout(t._h); t._h=setTimeout(function(){t.classList.remove('show');},2600); }
+var NOW=new Date();
+
+/* ---------- 게시물 ---------- */
+var POSTS=[
+  { id:1, day:1, bg:'linear-gradient(135deg,#c98a5e,#8a5a34)', img:'신제품 · 우드 데스크 오거나이저',
+    body:'새로 나온 우드 데스크 오거나이저입니다.\n펜꽂이 세 칸과 소품 트레이 한 칸으로 나눠서, 책상 위에 흩어져 있던 것들을 한자리에 모을 수 있게 만들었어요.\n원목 결이 그대로 보이도록 오일로만 마감했습니다.',
+    tags:'#나나샵 #데스크테리어 #원목소품 #책상정리', likes:412, views:8930 },
+  { id:2, day:3, bg:'linear-gradient(135deg,#5e7fc9,#34528a)', img:'이벤트 · 가을 배송 안내',
+    body:'가을 시즌 배송 안내드립니다.\n주문이 몰리는 시기라 평소보다 하루에서 이틀 정도 더 걸릴 수 있습니다.\n조금 늦더라도 포장은 꼼꼼히 해서 보내드리겠습니다. 양해 부탁드려요.',
+    tags:'#배송안내 #나나샵 #공지', likes:98, views:5120 },
+  { id:3, day:6, bg:'linear-gradient(135deg,#4fa88a,#2c6b56)', img:'사용기 · 무선충전 마우스패드',
+    body:'무선충전 마우스패드를 한 달 동안 써 본 후기를 정리했습니다.\n케이블 하나가 줄어드니 책상이 확실히 깔끔해집니다.\n다만 두꺼운 케이스를 쓰시면 충전이 잘 안 될 수 있어요. 구매 전에 케이스 두께를 확인해 주세요.',
+    tags:'#무선충전 #마우스패드 #사용후기', likes:257, views:11400 }
+];
+
+/* ---------- 초기 댓글 ---------- */
+var SEED=[
+  {p:1, k:'칭찬', n:'minji_k',      t:'색감 진짜 예뻐요. 저번에 산 폰 스탠드랑 같이 두면 딱일 것 같아요.'},
+  {p:1, k:'문의', n:'desk.lover',   t:'폭이 24cm라고 하셨는데 높이는 몇 cm인가요? 서랍 안에 넣어 두고 싶어서요.'},
+  {p:1, k:'불만', n:'ho_kim88',     t:'저번에 여기서 산 거 모서리 까져서 왔는데 아직 답변도 없네요. 이런 데서 신제품이 무슨 소용인지.'},
+  {p:2, k:'문의', n:'jeong_yu',     t:'제주도도 이틀 더 걸리는 건가요? 아니면 도서산간은 별도인가요?'},
+  {p:2, k:'칭찬', n:'sohee_',       t:'솔직하게 미리 알려주셔서 좋네요. 기다릴게요.'},
+  {p:3, k:'문의', n:'wonjae.p',     t:'케이스 두께 몇 mm까지 되나요? 3mm 정도 되는 것 같은데 될까요?'},
+  {p:3, k:'스팸', n:'deal_hunter7', t:'★★ 최저가 비교 사이트 오픈 ★★ 지금 가입하면 적립금 즉시 지급! 링크는 프로필에!'},
+  {p:3, k:'칭찬', n:'lee_haneul',   t:'저도 쓰는데 만족합니다. 특히 표면 감촉이 좋아요.'}
+];
+
+/* ---------- 도착 큐 (순서 고정) ---------- */
+var QUEUE=[
+  {p:1, k:'문의', n:'yuna_s',       t:'원목이면 물에 약한가요? 커피 흘렸을 때 얼룩 지나요?'},
+  {p:1, k:'칭찬', n:'bomi.workroom',t:'작업실에 두려고 두 개 주문했어요. 포장까지 예뻐서 감동입니다.'},
+  {p:2, k:'불만', n:'angry_buyer',  t:'하루 이틀이라더니 일주일째 안 오는데요? 송장도 조회가 안 됩니다. 환불해 주세요.'},
+  {p:3, k:'문의', n:'kim_dev',      t:'맥북 옆에 두고 써도 자석 간섭 없나요?'},
+  {p:1, k:'문의', n:'seo_yeon2',    t:'A/S 되나요? 다리 한쪽이 흔들려서요.'},
+  {p:2, k:'칭찬', n:'noeul_j',      t:'포장 꼼꼼하다는 말 진짜네요. 완충재 잘 넣어주셔서 감사합니다.'},
+  {p:3, k:'스팸', n:'promo_link_kr',t:'무료 쿠폰 배포 중! 아래 주소에서 확인하세요 → 바로가기'},
+  {p:1, k:'불만', n:'jjinjja_9',    t:'사진이랑 실물 색이 너무 다릅니다. 이거 광고 아닌가요?'},
+  {p:3, k:'문의', n:'hyun_woo',     t:'충전 중에 발열이 좀 있던데 정상인가요?'},
+  {p:2, k:'문의', n:'daon_lee',     t:'주말에도 발송하시나요?'},
+  {p:1, k:'칭찬', n:'oh_jinhee',    t:'선물했는데 너무 좋아하더라고요. 재구매 하러 왔습니다.'},
+  {p:3, k:'불만', n:'tired_user',   t:'설명에 케이스 두께 얘기 좀 처음부터 써 두시죠. 사고 나서 알았습니다.'},
+  {p:2, k:'문의', n:'park_ssong',   t:'배송비 무료 기준이 얼마인가요?'},
+  {p:1, k:'문의', n:'garden_1004',  t:'트레이 칸 크기가 어떻게 되나요? 클립 통이 들어갈까요?'},
+  {p:3, k:'칭찬', n:'mac_user_kr',  t:'한 달 후기 올려주셔서 도움 많이 됐어요. 주문했습니다.'},
+  {p:2, k:'스팸', n:'coupon_king',  t:'【광고】 전 카테고리 30% 할인코드 무료 배포! 선착순 100명!'}
+];
+
+/* ---------- 상태 ---------- */
+function getCmts(){
+  var s=Store.get('cmts',null);
+  if(s) return s;
+  var init=SEED.map(function(c,i){
+    return { id:i+1, post:c.p, kind:c.k, name:c.n, text:c.t,
+             at: ymdhm(addDays(NOW,-(i%4))), reply:null };
+  });
+  Store.set('cmts',init); Store.set('cursor',0);
+  return init;
+}
+function kindTag(k){
+  if(k==='문의') return '<span class="tag tag-q">문의</span>';
+  if(k==='불만') return '<span class="tag tag-b">불만</span>';
+  if(k==='스팸') return '<span class="tag tag-s">스팸</span>';
+  return '<span class="tag tag-g">칭찬</span>';
+}
+function initial(n){ return n.charAt(0).toUpperCase(); }
+
+/* ---------- 렌더 ---------- */
+function render(highlightId){
+  var cmts=getCmts();
+  var noReply=cmts.filter(function(c){ return !c.reply; }).length;
+  document.getElementById('statLine').textContent =
+    '게시물 ' + POSTS.length + '개 · 댓글 ' + cmts.length + '개 · 답글 안 단 댓글 ' + noReply + '개';
+  var auto=Store.get('auto',false);
+  document.getElementById('btnAuto').textContent = auto ? '자동 수신 켜짐' : '자동 수신 꺼짐';
+  document.getElementById('btnAuto').classList.toggle('on', auto);
+  document.getElementById('autoLine').textContent = auto ? '30초마다 한 건씩 도착합니다' : '';
+
+  var h='';
+  POSTS.forEach(function(p){
+    var mine=cmts.filter(function(c){ return c.post===p.id; });
+    h+='<div class="post" data-post="'+p.id+'">';
+    h+='<div class="post-h"><div class="av">나</div><div><div class="who">nanashop_official</div>'+
+       '<div class="when">'+ymd(addDays(NOW,-p.day))+'</div></div></div>';
+    h+='<div class="post-img" style="background:'+p.bg+'">'+esc(p.img)+'</div>';
+    h+='<div class="post-b">'+esc(p.body)+'</div>';
+    h+='<div class="post-tags">'+esc(p.tags)+'</div>';
+    h+='<div class="post-meta"><span>좋아요 '+p.likes.toLocaleString('ko-KR')+'</span>'+
+       '<span>조회 '+p.views.toLocaleString('ko-KR')+'</span><span>댓글 '+mine.length+'</span></div>';
+    h+='<div class="cmts">';
+    if(!mine.length) h+='<div class="empty">아직 댓글이 없습니다.</div>';
+    mine.forEach(function(c){
+      h+='<div class="cmt'+(c.id===highlightId?' newmark':'')+'" data-cmt="'+c.id+'">';
+      h+='<div class="av sm">'+esc(initial(c.name))+'</div><div class="body">';
+      h+='<div class="head"><b>'+esc(c.name)+'</b>'+kindTag(c.kind)+'<span class="t">'+c.at+'</span></div>';
+      h+='<p class="txt">'+esc(c.text)+'</p>';
+      if(c.reply){
+        h+='<div class="reply"><span class="who">nanashop_official</span>'+esc(c.reply)+'</div>';
+      }else{
+        h+='<div class="rform"><textarea data-ta="'+c.id+'" placeholder="답글을 입력하세요"></textarea>'+
+           '<button class="btn btn-p" data-send="'+c.id+'">답글 달기</button></div>';
+      }
+      h+='</div></div>';
+    });
+    h+='</div></div>';
+  });
+  document.getElementById('posts').innerHTML=h;
+
+  document.querySelectorAll('[data-send]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var id=+b.getAttribute('data-send');
+      var ta=document.querySelector('[data-ta="'+id+'"]');
+      var txt=(ta.value||'').trim();
+      if(!txt){ toast('답글 내용을 입력해 주세요.'); return; }
+      var list=getCmts();
+      list.forEach(function(c){ if(c.id===id) c.reply=txt; });
+      Store.set('cmts',list);
+      render(); toast('답글을 등록했습니다.');
+    });
+  });
+  if(highlightId){
+    var el=document.querySelector('[data-cmt="'+highlightId+'"]');
+    if(el){ el.scrollIntoView({behavior:'smooth',block:'center'});
+            setTimeout(function(){ el.classList.remove('newmark'); },1900); }
+  }
+}
+
+/* ---------- 새 댓글 ---------- */
+function receiveOne(silent){
+  var list=getCmts(), cur=Store.get('cursor',0);
+  var src=QUEUE[cur % QUEUE.length];
+  var maxId=0; list.forEach(function(c){ if(c.id>maxId) maxId=c.id; });
+  var nid=maxId+1;
+  list.push({ id:nid, post:src.p, kind:src.k, name:src.n, text:src.t, at:ymdhm(new Date()), reply:null });
+  Store.set('cmts',list); Store.set('cursor',cur+1);
+  render(nid);
+  if(!silent) toast('새 댓글이 1건 도착했습니다.');
+  return nid;
+}
+
+/* ---------- 자동 수신 ---------- */
+var timer=null;
+function applyAuto(){
+  var on=Store.get('auto',false);
+  if(timer){ clearInterval(timer); timer=null; }
+  if(on) timer=setInterval(function(){ receiveOne(true); }, 30000);
+}
+document.getElementById('btnAuto').addEventListener('click',function(){
+  var on=!Store.get('auto',false);
+  Store.set('auto',on); applyAuto(); render();
+  toast(on ? '자동 수신을 켰습니다. 30초마다 한 건씩 들어옵니다.' : '자동 수신을 껐습니다.');
+});
+document.getElementById('btnNew').addEventListener('click',function(){ receiveOne(false); });
+document.getElementById('btnReset').addEventListener('click',function(){
+  if(confirm('댓글과 답글을 처음 상태로 되돌립니다. 계속할까요?')){
+    Store.clear(); applyAuto(); render(); toast('초기화했습니다.');
+  }
+});
+
+getCmts(); applyAuto(); render();
+</script>
+</body>
+</html>

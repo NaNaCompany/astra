@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>나나샵 셀러 관리자</title>
+<style>
+  :root{
+    --bg:#f2f5f4; --panel:#fff; --line:#dde5e2; --line2:#eef3f1;
+    --ink:#17251f; --ink2:#54655d; --ink3:#8a9993;
+    --brand:#0f7a63; --brand-d:#0a5c4a; --brand-l:#e6f4f0;
+    --ok:#1f7a4d; --warn:#b4690e; --danger:#c0392b; --info:#1f5fbf;
+    --radius:6px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+       background:var(--bg);color:var(--ink);font-size:14px;line-height:1.55}
+  a{color:var(--brand);text-decoration:none}
+  button{font-family:inherit;font-size:14px;cursor:pointer}
+  .hidden{display:none !important}
+
+  #loginView{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .login-card{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:36px 34px}
+  .login-logo{font-size:22px;font-weight:700;letter-spacing:-.5px;margin:0 0 4px}
+  .login-logo span{color:var(--brand)}
+  .login-sub{color:var(--ink3);font-size:13px;margin:0 0 26px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:13px;color:var(--ink2);margin-bottom:6px}
+  .field input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:var(--radius);font-size:14px;font-family:inherit}
+  .field input:focus{outline:none;border-color:var(--brand)}
+  .err{color:var(--danger);font-size:13px;margin:-4px 0 12px;min-height:18px}
+  .login-hint{margin-top:22px;padding:12px 14px;background:#fffbe9;border:1px solid #f0e2b6;border-radius:var(--radius);font-size:12.5px;color:#6b5a1f;line-height:1.7}
+  .login-hint b{color:#4a3d10}
+
+  .btn{padding:9px 15px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;color:var(--ink)}
+  .btn:hover{background:#f6faf8}
+  .btn-primary{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+  .btn-primary:hover{background:var(--brand-d)}
+  .btn-danger{background:#fff;border-color:#e2b7b1;color:var(--danger)}
+  .btn-block{display:block;width:100%;padding:11px 16px}
+  .btn-sm{padding:5px 10px;font-size:12.5px}
+
+  .topbar{background:var(--brand);color:#fff;padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between}
+  .topbar-logo{font-size:16px;font-weight:700;letter-spacing:-.4px}
+  .topbar-right{display:flex;align-items:center;gap:12px;font-size:13px}
+  .topbar-right button{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:4px;padding:5px 10px;font-size:12.5px}
+  .topbar-right button:hover{background:rgba(255,255,255,.26)}
+  #appView{min-height:100vh;display:flex;flex-direction:column}
+  .shell{flex:1;display:flex}
+  .side{flex:0 0 186px;background:#fff;border-right:1px solid var(--line);padding:16px 0}
+  .side-sec{padding:8px 20px 6px;font-size:11.5px;color:var(--ink3);font-weight:700;letter-spacing:.4px}
+  .side a{display:flex;justify-content:space-between;align-items:center;padding:9px 20px;color:var(--ink2);font-size:13.5px;border-left:3px solid transparent}
+  .side a:hover{background:#f5f9f8;color:var(--ink)}
+  .side a.on{background:var(--brand-l);color:var(--brand-d);border-left-color:var(--brand);font-weight:600}
+  .side .badge{background:var(--danger);color:#fff;border-radius:9px;padding:1px 7px;font-size:11px;font-weight:700}
+  .main{flex:1;padding:24px 28px;min-width:0}
+  .page-head{margin:0 0 18px;display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap}
+  .page-head h1{font-size:20px;margin:0 0 5px;letter-spacing:-.3px}
+  .page-head p{margin:0;color:var(--ink3);font-size:13px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin-bottom:18px}
+  .card h2{font-size:15px;margin:0 0 14px;padding-bottom:10px;border-bottom:1px solid var(--line2)}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line2);text-align:left;vertical-align:top}
+  th{background:#f5f9f8;color:var(--ink2);font-weight:600;font-size:12.5px;white-space:nowrap;border-top:1px solid var(--line)}
+  tbody tr:hover{background:#fafcfb}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  tr.low td{background:#fff8f7}
+  tr.low:hover td{background:#fdf1ef}
+
+  .tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11.5px;font-weight:600;white-space:nowrap}
+  .tag-ok{background:#e7f4ed;color:var(--ok)}
+  .tag-warn{background:#fdf3e3;color:var(--warn)}
+  .tag-wait{background:#eef1f6;color:var(--ink2)}
+  .tag-new{background:#fdecea;color:var(--danger)}
+  .tag-info{background:#eaf1fc;color:var(--info)}
+
+  .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:18px}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+  .stat .l{font-size:12.5px;color:var(--ink3);margin-bottom:6px}
+  .stat .v{font-size:24px;font-weight:700;letter-spacing:-.5px}
+  .stat .v small{font-size:13px;font-weight:500;color:var(--ink3);margin-left:3px}
+
+  .pager{display:flex;gap:5px;align-items:center;justify-content:center;margin-top:16px;flex-wrap:wrap}
+  .pager button{min-width:32px;padding:6px 9px;border:1px solid var(--line);background:#fff;border-radius:4px;font-size:13px;color:var(--ink2)}
+  .pager button.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+  .pager button:disabled{color:#c3c9d4;cursor:default}
+  .pager .info{margin-left:10px;font-size:12.5px;color:var(--ink3)}
+  .filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .filters select,.filters input{padding:7px 10px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;font-family:inherit}
+
+  .stars{color:#e8a33d;letter-spacing:1px}
+  .review{padding:15px 2px;border-bottom:1px solid var(--line2)}
+  .review:last-child{border-bottom:none}
+  .rv-top{display:flex;gap:10px;align-items:baseline;margin-bottom:6px;flex-wrap:wrap}
+  .rv-body{margin:0 0 9px;line-height:1.75}
+  .rv-reply{background:#f5f9f8;border-left:3px solid var(--brand);padding:10px 13px;border-radius:0 4px 4px 0;font-size:13.5px;line-height:1.7;margin-top:8px}
+  .rv-reply .who{color:var(--brand-d);font-weight:600;font-size:12.5px;display:block;margin-bottom:3px}
+  .rv-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+  .rv-actions textarea{flex:1;min-width:220px;min-height:60px;padding:8px 10px;border:1px solid var(--line);border-radius:var(--radius);font-family:inherit;font-size:13.5px;resize:vertical}
+
+  .inq{padding:15px 2px;border-bottom:1px solid var(--line2)}
+  .inq:last-child{border-bottom:none}
+  .inq-top{display:flex;gap:9px;align-items:baseline;margin-bottom:6px;flex-wrap:wrap}
+  .inq-q{margin:0 0 9px;line-height:1.75}
+  .inq-a{background:#f5f9f8;border-left:3px solid var(--brand);padding:10px 13px;border-radius:0 4px 4px 0;font-size:13.5px;line-height:1.7}
+  .inq-a .who{color:var(--brand-d);font-weight:600;font-size:12.5px;display:block;margin-bottom:3px}
+
+  .form-row{display:flex;gap:14px;margin-bottom:13px;align-items:flex-start}
+  .form-row label{flex:0 0 100px;padding-top:9px;font-size:13.5px;color:var(--ink2)}
+  .form-row .fc{flex:1}
+  .form-row input,.form-row select,.form-row textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius);font-size:13.5px;font-family:inherit}
+  .form-row textarea{min-height:110px;resize:vertical;line-height:1.7}
+  .form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:16px;border-top:1px solid var(--line2)}
+  .preview{background:#fbfdfc;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .preview h3{text-align:center;font-size:17px;margin:0 0 18px;letter-spacing:2px}
+  .mail-head{font-size:13px;color:var(--ink2);border-bottom:1px solid var(--line2);padding-bottom:12px;margin-bottom:14px}
+  .mail-head b{color:var(--ink);display:inline-block;min-width:52px}
+  .mail-body{white-space:pre-wrap;line-height:1.85;font-size:13.5px}
+
+  .empty{padding:34px 0;text-align:center;color:var(--ink3);font-size:13.5px}
+  .toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);background:#17251f;color:#fff;padding:12px 20px;border-radius:6px;font-size:13.5px;box-shadow:0 4px 18px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:opacity .2s,bottom .2s;z-index:60}
+  .toast.show{opacity:1;bottom:44px}
+  .foot{padding:16px 28px;color:var(--ink3);font-size:12px;border-top:1px solid var(--line);background:#fff}
+  .hl{background:#fffbe6;transition:background 1.6s}
+  @media (max-width:860px){
+    .shell{flex-direction:column}
+    .side{flex:none;width:100%;border-right:none;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;padding:6px}
+    .side-sec{display:none}
+    .side a{border-left:none;border-bottom:2px solid transparent;padding:9px 13px;gap:6px}
+    .side a.on{border-left:none;border-bottom-color:var(--brand)}
+    .main{padding:18px 16px}
+    .form-row{flex-direction:column;gap:6px}
+    .form-row label{flex:none;padding-top:0}
+  }
+</style>
+</head>
+<body>
+
+<div id="loginView">
+  <div class="login-card">
+    <h1 class="login-logo">나나샵 <span>셀러 관리자</span></h1>
+    <p class="login-sub">NANASHOP Seller Admin</p>
+    <form id="loginForm" autocomplete="off">
+      <div class="field"><label for="loginId">셀러 아이디</label>
+        <input type="text" id="loginId" placeholder="아이디를 입력하세요"></div>
+      <div class="field"><label for="loginPw">비밀번호</label>
+        <input type="password" id="loginPw" placeholder="비밀번호를 입력하세요"></div>
+      <div class="err" id="loginErr"></div>
+      <button type="submit" class="btn btn-primary btn-block">로그인</button>
+    </form>
+    <div class="login-hint">
+      <b>실습용 사이트입니다.</b> 실제 쇼핑몰이 아니며 입력한 값은 어디로도 전송되지 않습니다.<br>
+      아이디 <b>nanashop</b> · 비밀번호 <b>nanalab1234</b>
+    </div>
+  </div>
+</div>
+
+<div id="appView" class="hidden">
+  <div class="topbar">
+    <div class="topbar-logo">나나샵 셀러 관리자</div>
+    <div class="topbar-right">
+      <span>정유진 · 온라인사업팀</span>
+      <button id="btnReset">초기화</button>
+      <button id="btnLogout">로그아웃</button>
+    </div>
+  </div>
+  <div class="shell">
+    <nav class="side" id="sideNav">
+      <div class="side-sec">판매</div>
+      <a href="#/orders" data-nav="orders"><span>주문 관리</span></a>
+      <div class="side-sec">재고</div>
+      <a href="#/stock" data-nav="stock"><span>재고 현황</span><span id="badgeStock"></span></a>
+      <a href="#/po" data-nav="po"><span>발주</span></a>
+      <a href="#/vendors" data-nav="vendors"><span>거래처</span></a>
+      <div class="side-sec">고객</div>
+      <a href="#/inquiries" data-nav="inquiries"><span>고객 문의</span><span id="badgeInq"></span></a>
+      <a href="#/reviews" data-nav="reviews"><span>리뷰</span><span id="badgeRv"></span></a>
+      <div class="side-sec">기록</div>
+      <a href="#/sent" data-nav="sent"><span>보낸함</span></a>
+    </nav>
+    <main class="main" id="main"></main>
+  </div>
+  <div class="foot">나나샵 셀러 관리자 · 실습용 사이트입니다. 실제 주문·재고·고객 데이터가 아닙니다.</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================================
+   나나샵 셀러 관리자 — 실습용 정적 웹앱
+   데이터는 전부 고정. 날짜·시각만 실제 현재 값을 씁니다.
+   "새 문의"는 미리 정해진 큐에서 순서대로 꺼내 옵니다.
+   ========================================================================= */
+
+var MEM = {};
+var Store = {
+  key:function(k){ return 'nanashop_' + k; },
+  get:function(k, d){
+    try{ var v = localStorage.getItem(this.key(k)); if(v!==null) return JSON.parse(v); }catch(e){}
+    return Object.prototype.hasOwnProperty.call(MEM,k) ? MEM[k] : d;
+  },
+  set:function(k,v){ MEM[k]=v; try{ localStorage.setItem(this.key(k), JSON.stringify(v)); }catch(e){} },
+  clear:function(){ MEM={}; try{
+      var del=[]; for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i);
+      if(k&&k.indexOf('nanashop_')===0) del.push(k); } del.forEach(function(k){localStorage.removeItem(k);});
+    }catch(e){} }
+};
+
+function pad(n){ return (n<10?'0':'')+n; }
+function ymd(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function ymdhm(d){ return ymd(d)+' '+pad(d.getHours())+':'+pad(d.getMinutes()); }
+function addDays(d,n){ var x=new Date(d.getTime()); x.setDate(x.getDate()+n); return x; }
+function won(n){ return n.toLocaleString('ko-KR'); }
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+var NOW = new Date();
+
+/* ---------- 상품 ---------- */
+var PRODUCTS = [
+  { sku:'NS-1001', name:'우드 데스크 오거나이저',      price:29800, stock:42, safe:20, vendor:'V-01' },
+  { sku:'NS-1002', name:'접이식 노트북 스탠드',        price:24500, stock:8,  safe:25, vendor:'V-01' },
+  { sku:'NS-1003', name:'무선 충전 마우스패드',        price:38900, stock:61, safe:30, vendor:'V-02' },
+  { sku:'NS-1004', name:'황동 북엔드 2개 세트',        price:19800, stock:3,  safe:15, vendor:'V-03' },
+  { sku:'NS-1005', name:'린넨 파우치 M',               price:12900, stock:120,safe:40, vendor:'V-04' },
+  { sku:'NS-1006', name:'스테인리스 텀블러 470ml',     price:26500, stock:17, safe:35, vendor:'V-02' },
+  { sku:'NS-1007', name:'가죽 마우스패드 라지',        price:34000, stock:55, safe:25, vendor:'V-03' },
+  { sku:'NS-1008', name:'모니터 받침대 화이트',        price:45900, stock:12, safe:20, vendor:'V-01' },
+  { sku:'NS-1009', name:'케이블 정리 클립 12P',        price:8900,  stock:230,safe:60, vendor:'V-04' },
+  { sku:'NS-1010', name:'우드 폰 스탠드',              price:15900, stock:6,  safe:20, vendor:'V-03' },
+  { sku:'NS-1011', name:'데스크 매트 L 그레이',        price:52000, stock:33, safe:15, vendor:'V-02' },
+  { sku:'NS-1012', name:'미니 가습기 250ml',           price:31900, stock:0,  safe:18, vendor:'V-04' }
+];
+var VENDORS = [
+  { id:'V-01', name:'대성목재산업',   manager:'김대성', email:'order@daesung-wood.co.kr',  tel:'031-555-0182', term:'발주 후 5영업일' },
+  { id:'V-02', name:'한빛금속',       manager:'이한빛', email:'sales@hanbit-metal.co.kr',  tel:'032-421-7734', term:'발주 후 7영업일' },
+  { id:'V-03', name:'우리공예',       manager:'박우리', email:'cs@woori-craft.co.kr',      tel:'055-332-1908', term:'발주 후 10영업일' },
+  { id:'V-04', name:'세경리빙',       manager:'최세경', email:'purchase@sekyung-living.kr',tel:'02-6712-3340', term:'발주 후 3영업일' }
+];
+
+/* ---------- 주문 (고정 데이터, 날짜만 오늘 기준) ---------- */
+var ORDER_SEED = [
+  {d:0,t:'09:14',c:'김*연',sku:'NS-1003',q:1,s:'결제완료'},
+  {d:0,t:'09:41',c:'박*호',sku:'NS-1005',q:3,s:'결제완료'},
+  {d:0,t:'10:02',c:'이*림',sku:'NS-1001',q:1,s:'상품준비중'},
+  {d:0,t:'10:33',c:'정*우',sku:'NS-1009',q:2,s:'결제완료'},
+  {d:0,t:'11:07',c:'최*빈',sku:'NS-1007',q:1,s:'결제완료'},
+  {d:0,t:'11:52',c:'한*경',sku:'NS-1002',q:1,s:'상품준비중'},
+  {d:0,t:'12:20',c:'오*진',sku:'NS-1011',q:1,s:'결제완료'},
+  {d:0,t:'13:05',c:'윤*서',sku:'NS-1005',q:2,s:'결제완료'},
+  {d:0,t:'13:44',c:'강*민',sku:'NS-1006',q:2,s:'취소'},
+  {d:0,t:'14:18',c:'신*아',sku:'NS-1004',q:1,s:'결제완료'},
+  {d:0,t:'15:02',c:'임*택',sku:'NS-1009',q:5,s:'결제완료'},
+  {d:0,t:'15:39',c:'구*희',sku:'NS-1003',q:1,s:'상품준비중'},
+  {d:0,t:'16:11',c:'배*현',sku:'NS-1010',q:2,s:'결제완료'},
+  {d:0,t:'16:47',c:'서*담',sku:'NS-1001',q:2,s:'결제완료'},
+  {d:1,t:'09:22',c:'문*기',sku:'NS-1008',q:1,s:'배송중'},
+  {d:1,t:'10:16',c:'하*늘',sku:'NS-1005',q:4,s:'배송중'},
+  {d:1,t:'11:38',c:'조*훈',sku:'NS-1007',q:1,s:'배송완료'},
+  {d:1,t:'12:44',c:'남*주',sku:'NS-1011',q:1,s:'배송중'},
+  {d:1,t:'14:09',c:'권*태',sku:'NS-1009',q:3,s:'배송중'},
+  {d:1,t:'15:31',c:'류*안',sku:'NS-1002',q:1,s:'취소'},
+  {d:1,t:'16:55',c:'차*원',sku:'NS-1006',q:1,s:'배송완료'},
+  {d:2,t:'09:48',c:'표*린',sku:'NS-1003',q:2,s:'배송완료'},
+  {d:2,t:'10:59',c:'황*수',sku:'NS-1001',q:1,s:'배송완료'},
+  {d:2,t:'13:12',c:'노*별',sku:'NS-1012',q:1,s:'배송완료'},
+  {d:2,t:'14:36',c:'백*겸',sku:'NS-1005',q:2,s:'배송완료'},
+  {d:2,t:'16:02',c:'양*솔',sku:'NS-1004',q:2,s:'교환요청'},
+  {d:3,t:'10:25',c:'유*찬',sku:'NS-1008',q:1,s:'배송완료'},
+  {d:3,t:'11:41',c:'심*보',sku:'NS-1009',q:4,s:'배송완료'},
+  {d:3,t:'14:53',c:'고*운',sku:'NS-1007',q:1,s:'반품요청'},
+  {d:3,t:'17:08',c:'장*목',sku:'NS-1011',q:1,s:'배송완료'},
+  {d:4,t:'09:35',c:'전*하',sku:'NS-1002',q:2,s:'배송완료'},
+  {d:4,t:'12:07',c:'맹*규',sku:'NS-1006',q:3,s:'배송완료'},
+  {d:4,t:'15:20',c:'설*완',sku:'NS-1010',q:1,s:'배송완료'},
+  {d:5,t:'10:44',c:'천*미',sku:'NS-1005',q:6,s:'배송완료'},
+  {d:5,t:'13:58',c:'추*범',sku:'NS-1003',q:1,s:'배송완료'},
+  {d:5,t:'16:29',c:'소*결',sku:'NS-1001',q:1,s:'배송완료'},
+  {d:6,t:'11:15',c:'봉*아',sku:'NS-1009',q:2,s:'배송완료'},
+  {d:6,t:'14:41',c:'단*호',sku:'NS-1008',q:1,s:'배송완료'}
+];
+function buildOrders(){
+  var out = [], n = 20260 + ORDER_SEED.length;
+  ORDER_SEED.forEach(function(o, i){
+    var p = null; PRODUCTS.forEach(function(x){ if(x.sku===o.sku) p=x; });
+    var day = addDays(NOW, -o.d);
+    out.push({
+      no: 'ORD-' + ymd(day).replace(/-/g,'') + '-' + pad(i+1),
+      at: ymd(day) + ' ' + o.t, day: ymd(day),
+      cust: o.c, sku: o.sku, name: p.name, qty: o.q,
+      amount: p.price * o.q, state: o.s
+    });
+  });
+  return out;
+}
+var ORDERS = buildOrders();
+
+/* ---------- 고객 문의 ---------- */
+var INQ_SEED = [
+  {t:'배송',   c:'김*연', q:'어제 주문했는데 언제쯤 발송되나요? 이번 주 안에 받아볼 수 있을까요?'},
+  {t:'환불',   c:'양*솔', q:'황동 북엔드 받았는데 한쪽에 흠집이 있습니다. 환불 가능한가요?'},
+  {t:'상품문의',c:'최*빈', q:'가죽 마우스패드 라지 사이즈가 정확히 몇 cm인가요? 상세페이지에 안 나와 있어서요.'},
+  {t:'배송',   c:'권*태', q:'주소를 잘못 입력했습니다. 아직 발송 전이면 변경할 수 있나요?'},
+  {t:'교환',   c:'고*운', q:'색상이 사진이랑 너무 다릅니다. 다른 색으로 교환하고 싶어요.'},
+  {t:'단순문의',c:'임*택', q:'영업시간이 어떻게 되나요? 전화 상담도 가능한지 궁금합니다.'},
+  {t:'상품문의',c:'배*현', q:'우드 폰 스탠드가 아이패드도 거치되나요?'},
+  {t:'환불',   c:'류*안', q:'주문 취소했는데 환불이 아직 안 됐습니다. 며칠 걸리나요?'}
+];
+var INQ_QUEUE = [
+  {t:'배송',   c:'서*담', q:'오늘 주문하면 언제 도착하나요? 주말 배송도 되는지 알고 싶습니다.'},
+  {t:'상품문의',c:'노*별', q:'미니 가습기 물통 용량이 250ml 맞나요? 하루 몇 시간 쓸 수 있나요?'},
+  {t:'환불',   c:'표*린', q:'단순 변심으로 반품하려는데 배송비는 얼마나 부담해야 하나요?'},
+  {t:'배송',   c:'황*수', q:'송장번호가 조회가 안 됩니다. 확인 부탁드립니다.'},
+  {t:'교환',   c:'백*겸', q:'린넨 파우치를 M에서 L로 교환하고 싶습니다. 차액은 어떻게 결제하나요?'},
+  {t:'단순문의',c:'천*미', q:'대량 구매하면 할인이 있나요? 회사에서 30개 정도 필요합니다.'},
+  {t:'상품문의',c:'유*찬', q:'모니터 받침대 하중이 몇 kg까지 되나요? 27인치 모니터를 올리려고 합니다.'},
+  {t:'환불',   c:'심*보', q:'박스가 찌그러진 상태로 왔습니다. 제품은 멀쩡한데 이런 경우도 반품 되나요?'},
+  {t:'배송',   c:'장*목', q:'부재중이라 못 받았는데 재배송 요청은 어디서 하나요?'},
+  {t:'단순문의',c:'전*하', q:'세금계산서 발행이 가능한가요? 사업자 구매입니다.'},
+  {t:'상품문의',c:'맹*규', q:'텀블러 식기세척기 사용 가능한가요?'},
+  {t:'교환',   c:'설*완', q:'케이블 클립 12개 중 3개가 파손되어 왔습니다. 부분 교환 되나요?'}
+];
+
+/* ---------- 리뷰 ---------- */
+var REVIEWS = [
+  {id:1, star:5, c:'김*연', sku:'NS-1003', body:'충전 속도도 빠르고 표면 감촉이 좋아요. 재구매 의사 있습니다.', day:1},
+  {id:2, star:5, c:'박*호', sku:'NS-1005', body:'가볍고 튼튼합니다. 색상도 사진 그대로예요.', day:1},
+  {id:3, star:4, c:'이*림', sku:'NS-1001', body:'잘 쓰고 있습니다. 다만 조립 설명서가 조금 불친절해요.', day:2},
+  {id:4, star:1, c:'양*솔', sku:'NS-1004', body:'한쪽 모서리가 깨져서 왔습니다. 불량이에요. 환불 요청드립니다.', day:2},
+  {id:5, star:5, c:'정*우', sku:'NS-1009', body:'가성비 최고. 12개나 들어있어서 여기저기 다 정리했어요.', day:3},
+  {id:6, star:3, c:'최*빈', sku:'NS-1007', body:'무난합니다. 근데 생각보다 얇아서 조금 아쉬워요.', day:3},
+  {id:7, star:5, c:'한*경', sku:'NS-1002', body:'각도 조절이 부드럽고 안정적입니다. 강추합니다.', day:4},
+  {id:8, star:2, c:'류*안', sku:'NS-1002', body:'배송이 일주일 넘게 걸렸습니다. 제품은 괜찮은데 이건 좀 아니지 않나요.', day:4},
+  {id:9, star:5, c:'오*진', sku:'NS-1011', body:'책상이 확 넓어 보여요. 크기 딱 맞습니다.', day:5},
+  {id:10,star:4, c:'윤*서', sku:'NS-1005', body:'실용적이고 좋아요. 지퍼가 조금 뻑뻑한 게 흠.', day:5},
+  {id:11,star:1, c:'고*운', sku:'NS-1007', body:'사진과 색상이 완전히 다릅니다. 허위광고 아닌가요? 소비자원에 문의하겠습니다.', day:6},
+  {id:12,star:5, c:'신*아', sku:'NS-1004', body:'묵직하고 고급스럽습니다. 선물용으로 좋아요.', day:6},
+  {id:13,star:4, c:'임*택', sku:'NS-1009', body:'잘 쓰고 있습니다. 접착력이 조금만 더 좋았으면.', day:7},
+  {id:14,star:5, c:'구*희', sku:'NS-1003', body:'디자인이 정말 예뻐요. 사무실에서 다들 물어봅니다.', day:7},
+  {id:15,star:2, c:'배*현', sku:'NS-1010', body:'폰은 잘 거치되는데 태블릿은 무게를 못 버팁니다. 설명에 명시해 주세요.', day:8}
+];
+
+/* ---------- 상태 ---------- */
+function getInq(){
+  var s = Store.get('inq', null);
+  if(s) return s;
+  var init = INQ_SEED.map(function(x, i){
+    return { id:i+1, type:x.t, cust:x.c, q:x.q, at: ymdhm(addDays(NOW, -(i%3))), state:'미답변', answer:null };
+  });
+  Store.set('inq', init); Store.set('inqCursor', 0);
+  return init;
+}
+function getReplies(){ return Store.get('replies', {}); }
+function getSent(){ return Store.get('sent', []); }
+function pushSent(item){ var s = getSent(); s.unshift(item); Store.set('sent', s); }
+function lowStock(){ return PRODUCTS.filter(function(p){ return p.stock < p.safe; }); }
+
+/* ---------- 셸 ---------- */
+function show(id){ ['loginView','appView'].forEach(function(v){
+  document.getElementById(v).classList.toggle('hidden', v!==id); }); }
+function toast(m){ var t=document.getElementById('toast'); t.textContent=m; t.classList.add('show');
+  clearTimeout(t._h); t._h=setTimeout(function(){t.classList.remove('show');},2600); }
+
+document.getElementById('loginForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var id=document.getElementById('loginId').value.trim(), pw=document.getElementById('loginPw').value;
+  if(id==='nanashop' && pw==='nanalab1234'){ Store.set('session',{at:Date.now()}); enterApp(); }
+  else document.getElementById('loginErr').textContent='아이디 또는 비밀번호가 올바르지 않습니다.';
+});
+document.getElementById('btnLogout').addEventListener('click', function(){
+  Store.set('session',null);
+  document.getElementById('loginId').value=''; document.getElementById('loginPw').value='';
+  document.getElementById('loginErr').textContent=''; show('loginView');
+});
+document.getElementById('btnReset').addEventListener('click', function(){
+  if(confirm('이 사이트에 저장된 실습 데이터를 모두 지웁니다.\n답변·답글·발주 이력이 사라집니다. 계속할까요?')){
+    Store.clear(); location.hash='#/orders'; show('loginView'); toast('초기화했습니다.');
+  }
+});
+function enterApp(){ show('appView');
+  if(!location.hash || location.hash.indexOf('#/')!==0) location.hash='#/orders';
+  route(); }
+
+/* ---------- 라우팅 ---------- */
+var st = { ordPage:1, ordFilter:'all', ordDate:'all', poPreview:null };
+
+function updateBadges(){
+  var low = lowStock().length;
+  var unanswered = getInq().filter(function(i){ return i.state==='미답변'; }).length;
+  var rep = getReplies();
+  var noReply = REVIEWS.filter(function(r){ return !rep[r.id]; }).length;
+  document.getElementById('badgeStock').innerHTML = low ? '<span class="badge">'+low+'</span>' : '';
+  document.getElementById('badgeInq').innerHTML   = unanswered ? '<span class="badge">'+unanswered+'</span>' : '';
+  document.getElementById('badgeRv').innerHTML    = noReply ? '<span class="badge">'+noReply+'</span>' : '';
+}
+function route(){
+  if(!Store.get('session',null)){ show('loginView'); return; }
+  show('appView');
+  var h=(location.hash||'#/orders').replace('#/',''), top=h.split('/')[0]||'orders';
+  document.querySelectorAll('#sideNav a').forEach(function(a){
+    a.classList.toggle('on', a.getAttribute('data-nav')===top); });
+  var m=document.getElementById('main');
+  if(top==='orders') m.innerHTML=viewOrders();
+  else if(top==='stock') m.innerHTML=viewStock();
+  else if(top==='po') m.innerHTML=viewPo();
+  else if(top==='vendors') m.innerHTML=viewVendors();
+  else if(top==='inquiries') m.innerHTML=viewInq();
+  else if(top==='reviews') m.innerHTML=viewReviews();
+  else if(top==='sent') m.innerHTML=viewSent();
+  else m.innerHTML='<div class="card"><div class="empty">페이지를 찾을 수 없습니다.</div></div>';
+  bind(top); updateBadges(); window.scrollTo(0,0);
+}
+window.addEventListener('hashchange', route);
+
+/* ---------- 주문 ---------- */
+var PER = 10;
+function viewOrders(){
+  var today = ymd(NOW);
+  var todays = ORDERS.filter(function(o){ return o.day===today; });
+  var todaySales = todays.filter(function(o){ return o.state!=='취소'; })
+                         .reduce(function(a,o){ return a+o.amount; },0);
+  var rows = ORDERS.filter(function(o){
+    if(st.ordDate==='today' && o.day!==today) return false;
+    if(st.ordFilter!=='all' && o.state!==st.ordFilter) return false;
+    return true;
+  });
+  var pages = Math.max(1, Math.ceil(rows.length/PER));
+  if(st.ordPage>pages) st.ordPage=pages;
+  var page = rows.slice((st.ordPage-1)*PER, st.ordPage*PER);
+
+  var h='<div class="page-head"><div><h1>주문 관리</h1><p>'+ymdhm(NOW)+' 기준</p></div></div>';
+  h+='<div class="summary">';
+  h+='<div class="stat"><div class="l">오늘 주문</div><div class="v">'+todays.length+'<small>건</small></div></div>';
+  h+='<div class="stat"><div class="l">오늘 매출 (취소 제외)</div><div class="v" style="font-size:20px">'+won(todaySales)+'<small>원</small></div></div>';
+  h+='<div class="stat"><div class="l">오늘 취소</div><div class="v">'+todays.filter(function(o){return o.state==='취소';}).length+'<small>건</small></div></div>';
+  h+='<div class="stat"><div class="l">전체 주문</div><div class="v">'+ORDERS.length+'<small>건</small></div></div>';
+  h+='</div>';
+
+  h+='<div class="card">';
+  h+='<div class="filters"><label>기간</label><select id="fDate">'+
+     '<option value="all"'+(st.ordDate==='all'?' selected':'')+'>전체</option>'+
+     '<option value="today"'+(st.ordDate==='today'?' selected':'')+'>오늘</option></select>';
+  h+='<label>상태</label><select id="fState">';
+  ['all','결제완료','상품준비중','배송중','배송완료','취소','교환요청','반품요청'].forEach(function(s){
+    h+='<option value="'+s+'"'+(st.ordFilter===s?' selected':'')+'>'+(s==='all'?'전체':s)+'</option>'; });
+  h+='</select><span style="color:var(--ink3);font-size:12.5px">조회 결과 '+rows.length+'건</span></div>';
+
+  h+='<table id="orderTable"><thead><tr><th>주문번호</th><th>주문일시</th><th>주문자</th><th>상품코드</th><th>상품명</th><th>수량</th><th>결제금액</th><th>상태</th></tr></thead><tbody>';
+  if(!page.length) h+='<tr><td colspan="8"><div class="empty">조회 결과가 없습니다.</div></td></tr>';
+  page.forEach(function(o){
+    var cls = o.state==='취소' ? 'tag tag-wait' : (o.state==='배송완료' ? 'tag tag-ok'
+             : (o.state==='교환요청'||o.state==='반품요청' ? 'tag tag-new' : 'tag tag-info'));
+    h+='<tr><td>'+o.no+'</td><td>'+o.at+'</td><td>'+esc(o.cust)+'</td><td>'+o.sku+'</td>'+
+       '<td>'+esc(o.name)+'</td><td class="num">'+o.qty+'</td><td class="num">'+won(o.amount)+'</td>'+
+       '<td><span class="'+cls+'">'+o.state+'</span></td></tr>';
+  });
+  h+='</tbody></table>';
+  h+=pagerHtml(st.ordPage, rows.length);
+  h+='</div>';
+  return h;
+}
+function pagerHtml(page, total){
+  var pages=Math.max(1,Math.ceil(total/PER)), h='<div class="pager">';
+  h+='<button data-pg="'+(page-1)+'" '+(page===1?'disabled':'')+'>이전</button>';
+  for(var i=1;i<=pages;i++) h+='<button data-pg="'+i+'" class="'+(i===page?'on':'')+'">'+i+'</button>';
+  h+='<button data-pg="'+(page+1)+'" '+(page===pages?'disabled':'')+'>다음</button>';
+  h+='<span class="info">전체 '+total+'건 중 '+(total?((page-1)*PER+1):0)+'–'+Math.min(page*PER,total)+'건</span>';
+  return h+'</div>';
+}
+
+/* ---------- 재고 ---------- */
+function viewStock(){
+  var low=lowStock();
+  var h='<div class="page-head"><div><h1>재고 현황</h1><p>안전재고 미만 '+low.length+'개 품목</p></div>'+
+        (low.length?'<a href="#/po" class="btn btn-primary">부족 품목 발주하기</a>':'')+'</div>';
+  h+='<div class="card"><table id="stockTable"><thead><tr><th>상품코드</th><th>상품명</th><th>판매가</th><th>현재고</th><th>안전재고</th><th>부족수량</th><th>거래처</th><th>상태</th></tr></thead><tbody>';
+  PRODUCTS.forEach(function(p){
+    var isLow=p.stock<p.safe, v=null; VENDORS.forEach(function(x){ if(x.id===p.vendor) v=x; });
+    h+='<tr class="'+(isLow?'low':'')+'"><td>'+p.sku+'</td><td>'+esc(p.name)+'</td>'+
+       '<td class="num">'+won(p.price)+'</td><td class="num">'+p.stock+'</td><td class="num">'+p.safe+'</td>'+
+       '<td class="num">'+(isLow?(p.safe-p.stock):'—')+'</td><td>'+esc(v.name)+'</td>'+
+       '<td>'+(p.stock===0?'<span class="tag tag-new">품절</span>':(isLow?'<span class="tag tag-warn">부족</span>':'<span class="tag tag-ok">정상</span>'))+'</td></tr>';
+  });
+  return h+'</tbody></table></div>';
+}
+function viewVendors(){
+  var h='<div class="page-head"><div><h1>거래처</h1><p>발주 메일 수신처</p></div></div><div class="card">';
+  h+='<table id="vendorTable"><thead><tr><th>코드</th><th>거래처명</th><th>담당자</th><th>이메일</th><th>연락처</th><th>납기</th><th>취급 품목</th></tr></thead><tbody>';
+  VENDORS.forEach(function(v){
+    var items=PRODUCTS.filter(function(p){return p.vendor===v.id;}).map(function(p){return p.sku;});
+    h+='<tr><td>'+v.id+'</td><td>'+esc(v.name)+'</td><td>'+esc(v.manager)+'</td><td>'+esc(v.email)+'</td>'+
+       '<td>'+v.tel+'</td><td>'+esc(v.term)+'</td><td>'+items.join(', ')+'</td></tr>';
+  });
+  return h+'</tbody></table></div>';
+}
+
+/* ---------- 발주 ---------- */
+function viewPo(){
+  var low=lowStock();
+  if(st.poPreview){
+    var d=st.poPreview;
+    var h='<div class="page-head"><div><h1>발주서 미리보기</h1><p>승인하면 거래처로 메일이 발송됩니다</p></div></div>';
+    d.mails.forEach(function(m,i){
+      h+='<div class="card"><h2>발주서 '+(i+1)+' / '+d.mails.length+'</h2><div class="preview">';
+      h+='<div class="mail-head"><div><b>받는사람</b> '+esc(m.to)+'</div><div><b>제목</b> '+esc(m.subject)+'</div></div>';
+      h+='<div class="mail-body">'+esc(m.body)+'</div></div></div>';
+    });
+    h+='<div class="card"><div class="form-actions" style="border:none;margin:0;padding:0">'+
+       '<button class="btn" id="btnPoBack">수정하기</button>'+
+       '<button class="btn btn-primary" id="btnPoSend">승인하고 메일 보내기</button></div></div>';
+    return h;
+  }
+  var h='<div class="page-head"><div><h1>발주</h1><p>안전재고 미만 품목 '+low.length+'개</p></div></div>';
+  if(!low.length) return h+'<div class="card"><div class="empty">부족한 품목이 없습니다.</div></div>';
+  h+='<div class="card"><h2>발주 수량 입력</h2>';
+  h+='<table id="poTable"><thead><tr><th>상품코드</th><th>상품명</th><th>현재고</th><th>안전재고</th><th>거래처</th><th>발주수량</th></tr></thead><tbody>';
+  low.forEach(function(p){
+    var v=null; VENDORS.forEach(function(x){ if(x.id===p.vendor) v=x; });
+    var suggest=(p.safe-p.stock)+20;
+    h+='<tr><td>'+p.sku+'</td><td>'+esc(p.name)+'</td><td class="num">'+p.stock+'</td>'+
+       '<td class="num">'+p.safe+'</td><td>'+esc(v.name)+'</td>'+
+       '<td class="num"><input type="number" min="0" value="'+suggest+'" data-po="'+p.sku+'" style="width:90px;padding:6px 8px;border:1px solid var(--line);border-radius:4px;text-align:right;font-family:inherit"></td></tr>';
+  });
+  h+='</tbody></table>';
+  h+='<div class="form-actions"><button class="btn btn-primary" id="btnPoPreview">발주서 미리보기</button></div></div>';
+  return h;
+}
+function buildPoMails(){
+  var byVendor={};
+  document.querySelectorAll('input[data-po]').forEach(function(inp){
+    var qty=parseInt(inp.value,10)||0; if(qty<=0) return;
+    var sku=inp.getAttribute('data-po'), p=null; PRODUCTS.forEach(function(x){ if(x.sku===sku) p=x; });
+    if(!byVendor[p.vendor]) byVendor[p.vendor]=[];
+    byVendor[p.vendor].push({p:p, qty:qty});
+  });
+  var mails=[];
+  Object.keys(byVendor).forEach(function(vid){
+    var v=null; VENDORS.forEach(function(x){ if(x.id===vid) v=x; });
+    var items=byVendor[vid], total=0, lines=[];
+    items.forEach(function(it, i){
+      var amt=it.p.price*it.qty; total+=amt;
+      lines.push((i+1)+'. '+it.p.name+' ('+it.p.sku+')  수량 '+it.qty+'개  단가 '+won(it.p.price)+'원  금액 '+won(amt)+'원');
+    });
+    mails.push({
+      to: v.name+' '+v.manager+' 담당자님 <'+v.email+'>',
+      subject: '[나나샵] 발주 요청 - '+ymd(NOW),
+      body: v.name+' '+v.manager+'님, 안녕하세요.\n나나샵 온라인사업팀 정유진입니다.\n\n아래와 같이 발주 요청드립니다.\n\n'
+            + lines.join('\n')
+            + '\n\n합계 금액: '+won(total)+'원\n납기 조건: '+v.term
+            + '\n입고처: 나나샵 물류센터\n\n확인 후 회신 부탁드립니다.\n감사합니다.\n\n나나샵 온라인사업팀 정유진 드림'
+    });
+  });
+  return mails;
+}
+
+/* ---------- 고객 문의 ---------- */
+function viewInq(){
+  var list=getInq();
+  var un=list.filter(function(i){return i.state==='미답변';}).length;
+  var h='<div class="page-head"><div><h1>고객 문의</h1><p>전체 '+list.length+'건 · 미답변 '+un+'건</p></div>'+
+        '<button class="btn" id="btnNewInq">새 문의 1건 받기</button></div><div class="card">';
+  if(!list.length) return h+'<div class="empty">문의가 없습니다.</div></div>';
+  list.forEach(function(q){
+    h+='<div class="inq" data-inq="'+q.id+'">';
+    h+='<div class="inq-top"><span class="tag tag-info">'+esc(q.type)+'</span>'+
+       '<b>'+esc(q.cust)+'</b><span style="color:var(--ink3);font-size:12.5px">'+q.at+'</span>'+
+       (q.state==='미답변'?'<span class="tag tag-new">미답변</span>':'<span class="tag tag-ok">답변완료</span>')+'</div>';
+    h+='<p class="inq-q">'+esc(q.q)+'</p>';
+    if(q.answer){
+      h+='<div class="inq-a"><span class="who">나나샵 답변</span>'+esc(q.answer)+'</div>';
+    }else{
+      h+='<div class="rv-actions"><textarea data-ans="'+q.id+'" placeholder="답변을 입력하세요"></textarea>'+
+         '<button class="btn btn-primary btn-sm" data-send-ans="'+q.id+'">답변 발송</button></div>';
+    }
+    h+='</div>';
+  });
+  return h+'</div>';
+}
+
+/* ---------- 리뷰 ---------- */
+function stars(n){ return '★★★★★'.slice(0,n) + '☆☆☆☆☆'.slice(0,5-n); }
+function viewReviews(){
+  var rep=getReplies();
+  var noReply=REVIEWS.filter(function(r){ return !rep[r.id]; }).length;
+  var avg=(REVIEWS.reduce(function(a,r){return a+r.star;},0)/REVIEWS.length).toFixed(2);
+  var h='<div class="page-head"><div><h1>리뷰</h1><p>전체 '+REVIEWS.length+'건 · 미답변 '+noReply+'건 · 평균 '+avg+'점</p></div></div>';
+  h+='<div class="summary">';
+  [5,4,3,2,1].forEach(function(s){
+    h+='<div class="stat"><div class="l">'+s+'점</div><div class="v">'+
+       REVIEWS.filter(function(r){return r.star===s;}).length+'<small>건</small></div></div>';
+  });
+  h+='</div><div class="card">';
+  REVIEWS.forEach(function(r){
+    var p=null; PRODUCTS.forEach(function(x){ if(x.sku===r.sku) p=x; });
+    h+='<div class="review" data-rv="'+r.id+'">';
+    h+='<div class="rv-top"><span class="stars">'+stars(r.star)+'</span>'+
+       '<b>'+esc(r.c)+'</b><span style="color:var(--ink3);font-size:12.5px">'+esc(p.name)+' · '+ymd(addDays(NOW,-r.day))+'</span></div>';
+    h+='<p class="rv-body">'+esc(r.body)+'</p>';
+    if(rep[r.id]){
+      h+='<div class="rv-reply"><span class="who">판매자 답글</span>'+esc(rep[r.id])+'</div>';
+    }else{
+      h+='<div class="rv-actions"><textarea data-rvans="'+r.id+'" placeholder="답글을 입력하세요"></textarea>'+
+         '<button class="btn btn-primary btn-sm" data-send-rv="'+r.id+'">답글 등록</button></div>';
+    }
+    h+='</div>';
+  });
+  return h+'</div>';
+}
+
+/* ---------- 보낸함 ---------- */
+function viewSent(){
+  var s=getSent();
+  var h='<div class="page-head"><div><h1>보낸함</h1><p>발송·등록 이력 '+s.length+'건</p></div></div><div class="card">';
+  if(!s.length) return h+'<div class="empty">아직 보낸 내역이 없습니다.</div></div>';
+  h+='<table><thead><tr><th>일시</th><th>종류</th><th>대상</th><th>내용</th></tr></thead><tbody>';
+  s.forEach(function(x){
+    h+='<tr><td style="white-space:nowrap">'+x.at+'</td><td><span class="tag tag-info">'+esc(x.kind)+'</span></td>'+
+       '<td>'+esc(x.to)+'</td><td style="max-width:520px">'+esc(x.summary)+'</td></tr>';
+  });
+  return h+'</tbody></table></div>';
+}
+
+/* ---------- 이벤트 ---------- */
+function bind(top){
+  document.querySelectorAll('.pager button[data-pg]').forEach(function(b){
+    b.addEventListener('click',function(){ st.ordPage=+b.getAttribute('data-pg'); route(); }); });
+  var fd=document.getElementById('fDate'); if(fd) fd.addEventListener('change',function(){ st.ordDate=fd.value; st.ordPage=1; route(); });
+  var fs=document.getElementById('fState'); if(fs) fs.addEventListener('change',function(){ st.ordFilter=fs.value; st.ordPage=1; route(); });
+
+  var bp=document.getElementById('btnPoPreview');
+  if(bp) bp.addEventListener('click',function(){
+    var mails=buildPoMails();
+    if(!mails.length){ toast('발주 수량을 입력해 주세요.'); return; }
+    st.poPreview={mails:mails}; route();
+  });
+  var bb=document.getElementById('btnPoBack'); if(bb) bb.addEventListener('click',function(){ st.poPreview=null; route(); });
+  var bs=document.getElementById('btnPoSend');
+  if(bs) bs.addEventListener('click',function(){
+    st.poPreview.mails.forEach(function(m){
+      pushSent({ at: ymdhm(new Date()), kind:'발주 메일', to:m.to, summary:m.subject });
+    });
+    var n=st.poPreview.mails.length; st.poPreview=null;
+    location.hash='#/sent'; toast(n+'개 거래처로 발주 메일을 보냈습니다.');
+  });
+
+  var bn=document.getElementById('btnNewInq');
+  if(bn) bn.addEventListener('click',function(){
+    var list=getInq(), cur=Store.get('inqCursor',0);
+    var src=INQ_QUEUE[cur % INQ_QUEUE.length];
+    var maxId=0; list.forEach(function(x){ if(x.id>maxId) maxId=x.id; });
+    list.unshift({ id:maxId+1, type:src.t, cust:src.c, q:src.q, at: ymdhm(new Date()), state:'미답변', answer:null });
+    Store.set('inq', list); Store.set('inqCursor', cur+1);
+    route();
+    var el=document.querySelector('[data-inq="'+(maxId+1)+'"]');
+    if(el){ el.classList.add('hl'); setTimeout(function(){ el.classList.remove('hl'); }, 1800); }
+    toast('새 문의가 1건 도착했습니다.');
+  });
+  document.querySelectorAll('[data-send-ans]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var id=+b.getAttribute('data-send-ans');
+      var ta=document.querySelector('[data-ans="'+id+'"]');
+      var txt=(ta.value||'').trim();
+      if(!txt){ toast('답변 내용을 입력해 주세요.'); return; }
+      var list=getInq(), target=null;
+      list.forEach(function(x){ if(x.id===id){ x.answer=txt; x.state='답변완료'; target=x; } });
+      Store.set('inq', list);
+      pushSent({ at: ymdhm(new Date()), kind:'문의 답변', to: target.cust+' 고객님', summary: txt });
+      route(); toast('답변을 발송했습니다.');
+    });
+  });
+  document.querySelectorAll('[data-send-rv]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var id=+b.getAttribute('data-send-rv');
+      var ta=document.querySelector('[data-rvans="'+id+'"]');
+      var txt=(ta.value||'').trim();
+      if(!txt){ toast('답글 내용을 입력해 주세요.'); return; }
+      var rep=getReplies(); rep[id]=txt; Store.set('replies', rep);
+      var r=null; REVIEWS.forEach(function(x){ if(x.id===id) r=x; });
+      pushSent({ at: ymdhm(new Date()), kind:'리뷰 답글', to: r.c+' 고객님 ('+r.star+'점)', summary: txt });
+      route(); toast('답글을 등록했습니다.');
+    });
+  });
+}
+
+(function init(){ if(Store.get('session',null)) enterApp(); else show('loginView'); })();
+</script>
+</body>
+</html>

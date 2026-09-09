@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPT-6 아스트라 업무 자동화 · 실습 사이트</title>
+<style>
+  :root{
+    --ink:#12161c; --ink2:#4a5563; --ink3:#8892a0;
+    --line:#e5e9ee; --panel:#fff; --bg:#f6f7f9;
+    --portal:#1f5fbf; --seller:#0f7a63; --sns:#d94a6a; --shop:#4a4a52;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+    background:var(--bg); color:var(--ink); font-size:15px; line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{text-decoration:none;color:inherit}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+
+  /* ---- 히어로 ---- */
+  .hero{
+    background:
+      radial-gradient(900px 380px at 12% -10%, rgba(31,95,191,.30), transparent 60%),
+      radial-gradient(760px 340px at 88% 0%, rgba(217,74,106,.22), transparent 62%),
+      linear-gradient(160deg,#0e1319 0%,#161d27 100%);
+    color:#fff; padding:74px 0 82px; position:relative; overflow:hidden;
+  }
+  .hero::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);
+  }
+  .eyebrow{
+    display:inline-block; font-size:12px; letter-spacing:2.2px; font-weight:700;
+    color:#9fb4d4; border:1px solid rgba(159,180,212,.32); border-radius:20px;
+    padding:5px 14px; margin-bottom:22px;
+  }
+  .hero h1{
+    font-size:clamp(28px,4.4vw,42px); line-height:1.28; margin:0 0 16px;
+    letter-spacing:-1.2px; font-weight:800;
+  }
+  .hero h1 em{ font-style:normal; color:#8fc0ff }
+  .hero p{ margin:0; color:#aeb9c8; font-size:15.5px; max-width:640px; line-height:1.8 }
+  .hero .meta{
+    margin-top:30px; display:flex; gap:26px; flex-wrap:wrap;
+    font-size:13px; color:#8b98a9; border-top:1px solid rgba(255,255,255,.09); padding-top:22px;
+  }
+  .hero .meta b{ color:#dde5ef; font-weight:700; display:block; font-size:19px; letter-spacing:-.4px; margin-bottom:2px }
+
+  /* ---- 카드 ---- */
+  .section{ padding:52px 0 20px }
+  .section-h{ display:flex; align-items:baseline; gap:12px; margin-bottom:6px }
+  .section-h h2{ font-size:20px; margin:0; letter-spacing:-.5px }
+  .section-h span{ color:var(--ink3); font-size:13px }
+  .section-lead{ color:var(--ink2); font-size:14px; margin:0 0 26px; max-width:660px }
+
+  .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:18px }
+  .card{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:0; overflow:hidden; display:flex; flex-direction:column;
+    transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  }
+  .card:hover{ transform:translateY(-3px); box-shadow:0 10px 30px rgba(18,22,28,.09); border-color:#d3dae3 }
+  .card-top{ height:6px }
+  .card-in{ padding:24px 26px 26px; display:flex; flex-direction:column; flex:1 }
+  .card .path{
+    font-size:12px; letter-spacing:.4px; color:var(--ink3);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; margin-bottom:11px;
+  }
+  .card h3{ font-size:19px; margin:0 0 9px; letter-spacing:-.5px }
+  .card .desc{ color:var(--ink2); font-size:13.8px; margin:0 0 18px; line-height:1.75; flex:1 }
+  .chips{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px }
+  .chip{
+    font-size:11.5px; padding:3px 9px; border-radius:11px;
+    background:#f1f4f7; color:var(--ink2); font-weight:600;
+  }
+  .card .acct{
+    font-size:12.5px; color:var(--ink2); background:#fafbfc; border:1px solid #eef1f4;
+    border-radius:8px; padding:10px 12px; margin-bottom:18px; line-height:1.7;
+  }
+  .card .acct b{ color:var(--ink); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12.5px }
+  .card .acct.none{ color:var(--ink3) }
+  .go{
+    display:inline-flex; align-items:center; gap:7px; align-self:flex-start;
+    font-size:14px; font-weight:700; color:#fff; padding:10px 18px; border-radius:9px;
+    transition:filter .15s;
+  }
+  .card:hover .go{ filter:brightness(1.08) }
+  .go span{ transition:transform .16s }
+  .card:hover .go span{ transform:translateX(3px) }
+
+  .c-portal .card-top{background:var(--portal)} .c-portal .go{background:var(--portal)}
+  .c-seller .card-top{background:var(--seller)} .c-seller .go{background:var(--seller)}
+  .c-sns    .card-top{background:var(--sns)}    .c-sns .go{background:var(--sns)}
+  .c-shop   .card-top{background:var(--shop)}   .c-shop .go{background:var(--shop)}
+
+  /* ---- 안내 ---- */
+  .notes{ padding:20px 0 60px }
+  .note{
+    background:var(--panel); border:1px solid var(--line); border-radius:12px;
+    padding:22px 26px; margin-bottom:14px;
+  }
+  .note h4{ margin:0 0 9px; font-size:15px; letter-spacing:-.3px }
+  .note p{ margin:0 0 9px; color:var(--ink2); font-size:13.8px; line-height:1.8 }
+  .note p:last-child{ margin-bottom:0 }
+  .note.warn{ border-left:3px solid #d1a24a; border-radius:0 12px 12px 0 }
+  .note ul{ margin:0; padding-left:19px; color:var(--ink2); font-size:13.8px; line-height:1.9 }
+
+  .foot{ border-top:1px solid var(--line); padding:26px 0 50px; color:var(--ink3); font-size:12.5px }
+  .foot b{ color:var(--ink2) }
+  @media (max-width:640px){
+    .hero{ padding:56px 0 60px }
+    .hero .meta{ gap:20px }
+    .card-in{ padding:22px 20px 24px }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">PRACTICE SITES</div>
+    <h1>책을 따라 하는 동안<br><em>마음껏 망가뜨려도 되는</em> 회사</h1>
+    <p>『GPT-6 아스트라 업무 자동화 65제』의 실습용 사이트입니다.
+       아스트라에게 로그인을 시키고, 표를 긁게 하고, 결재를 올리고, 고객에게 답장을 보내는 연습을
+       진짜 계정 대신 여기서 합니다. 여기 있는 회사와 사람, 주문과 리뷰는 전부 가상입니다.</p>
+    <div class="meta">
+      <div><b>4</b>개 실습 사이트</div>
+      <div><b>15</b>개 레시피에서 사용</div>
+      <div><b>0</b>건의 실제 발송</div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="section">
+    <div class="section-h"><h2>실습 사이트</h2><span>레시피에서 지정한 곳으로 바로 들어가세요</span></div>
+    <p class="section-lead">각 사이트는 서로 다른 회사인 것처럼 만들어져 있습니다. 화면 구성도, 다루는 데이터도 다릅니다.</p>
+
+    <div class="grid">
+
+      <a class="card c-portal" href="./portal/">
+        <div class="card-top"></div>
+        <div class="card-in">
+          <div class="path">/astra/portal</div>
+          <h3>나나랩 업무 포털</h3>
+          <p class="desc">로그인이 있는 회사 그룹웨어입니다. 공지와 문서함을 읽고, 내보내기 버튼이 없는 근태·급여 표를 긁고, 전자결재를 상신합니다. 외부 계정 로그인 동의 화면도 여기 있습니다.</p>
+          <div class="chips"><span class="chip">레시피 13</span><span class="chip">14</span><span class="chip">15</span><span class="chip">32</span><span class="chip">34</span><span class="chip">38</span></div>
+          <div class="acct">아이디 <b>hong</b> · 비밀번호 <b>nanalab1234</b></div>
+          <div class="go">들어가기 <span>→</span></div>
+        </div>
+      </a>
+
+      <a class="card c-seller" href="./seller/">
+        <div class="card-top"></div>
+        <div class="card-in">
+          <div class="path">/astra/seller</div>
+          <h3>나나샵 셀러 관리자</h3>
+          <p class="desc">쇼핑몰 판매자 화면입니다. 오늘 들어온 주문을 세고, 재고가 부족한 품목의 발주서를 만들어 승인 후 거래처에 보내고, 고객 문의와 리뷰에 답합니다.</p>
+          <div class="chips"><span class="chip">레시피 33</span><span class="chip">48</span><span class="chip">51</span><span class="chip">52</span><span class="chip">53</span></div>
+          <div class="acct">아이디 <b>nanashop</b> · 비밀번호 <b>nanalab1234</b></div>
+          <div class="go">들어가기 <span>→</span></div>
+        </div>
+      </a>
+
+      <a class="card c-sns" href="./sns/">
+        <div class="card-top"></div>
+        <div class="card-in">
+          <div class="path">/astra/sns</div>
+          <h3>나나샵 소셜</h3>
+          <p class="desc">브랜드 SNS 계정입니다. 게시물에 칭찬·문의·불만·스팸 댓글이 섞여 달립니다. 버튼으로 새 댓글을 받거나 자동 수신을 켜 두고, 답글을 답니다.</p>
+          <div class="chips"><span class="chip">레시피 37</span></div>
+          <div class="acct none">로그인이 없습니다. 바로 들어가면 됩니다.</div>
+          <div class="go">들어가기 <span>→</span></div>
+        </div>
+      </a>
+
+      <a class="card c-shop" href="./shop/">
+        <div class="card-top"></div>
+        <div class="card-in">
+          <div class="path">/astra/shop</div>
+          <h3>외부 사이트 모음</h3>
+          <p class="desc">내 회사 바깥의 웹입니다. 가격표 구조가 제각각인 경쟁사 세 곳과, 같은 양식을 여러 번 채워야 하는 신청 폼이 들어 있습니다.</p>
+          <div class="chips"><span class="chip">레시피 35</span><span class="chip">36</span><span class="chip">43</span></div>
+          <div class="acct none">로그인이 없습니다. 바로 들어가면 됩니다.</div>
+          <div class="go">들어가기 <span>→</span></div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <section class="notes">
+    <div class="note">
+      <h4>시작하기 전에</h4>
+      <ul>
+        <li>여기 있는 회사·사람·주문·리뷰는 모두 지어낸 것입니다. 실제 데이터가 아닙니다.</li>
+        <li>메일 발송, 결재 상신, 답글 등록은 <b>실제로 나가지 않습니다.</b> 각 사이트의 보낸함이나 목록에만 쌓입니다.</li>
+        <li>망가뜨려도 됩니다. 각 사이트 안에 <b>초기화</b> 버튼이 있어 처음 상태로 되돌릴 수 있습니다.</li>
+        <li>기록은 지금 쓰는 브라우저 안에만 남습니다. 다른 기기에서 열면 처음 상태로 보입니다.</li>
+      </ul>
+    </div>
+
+    <div class="note warn">
+      <h4>레시피 43을 진행하기 전에는 읽지 마세요</h4>
+      <p>외부 사이트 모음의 경쟁사 페이지 두 곳에는 아스트라에게 말을 거는 문장이 숨어 있습니다.
+         먼저 레시피 36으로 가격을 수집해 보고, 결과가 이상하게 나오는지 확인한 다음
+         레시피 43에서 그 문장을 찾아보세요. 순서를 지키면 훨씬 인상 깊게 남습니다.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <b>GPT-6 아스트라 업무 자동화 65제</b> · 실습용 사이트 모음<br>
+    이 페이지의 모든 사이트는 교육 목적으로 만들어진 가상의 서비스입니다. 실재하는 기업·브랜드와 관련이 없습니다.
+  </div>
+</footer>
+
+</body>
+</html>
