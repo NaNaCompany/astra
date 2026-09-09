@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PLAN OFFICE | 단가표</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo","Noto Sans KR",sans-serif;font-size:14px;line-height:1.6;color:#222}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit;cursor:pointer}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+.backbar{background:#12161c;color:#98a3b1;font-size:12.5px;padding:9px 0}
+.backbar a{color:#8fb6e8}
+.backbar a:hover{text-decoration:underline}
+.toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);background:#12161c;color:#fff;padding:12px 20px;border-radius:6px;font-size:13.5px;box-shadow:0 4px 18px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .2s,bottom .2s;z-index:60}
+.toast.show{opacity:1;bottom:44px}
+
+
+.bC{background:#f5f7fa;color:#1a2332;min-height:100vh}
+.bC .nav{background:#0b3d91;color:#fff;padding:16px 0}
+.bC .logo{font-size:19px;font-weight:700}
+.bC .logo small{font-weight:400;opacity:.75;font-size:12px;margin-left:9px}
+.bC .band{background:#e8edf5;padding:22px 0;border-bottom:1px solid #d5dee9}
+.bC .band h2{margin:0 0 5px;font-size:20px;color:#0b3d91}
+.bC .band p{margin:0;font-size:13px;color:#5a6b80}
+.bC .row{background:#fff;border:1px solid #dbe3ed;border-radius:5px;margin:14px 0;padding:18px 20px;display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.bC .row .info{flex:1;min-width:230px}
+.bC .row .code{font-size:11.5px;color:#8494a8;letter-spacing:.6px}
+.bC .row .nm{font-size:16px;font-weight:700;margin:4px 0 7px}
+.bC .row .ds{font-size:12.5px;color:#5a6b80;line-height:1.8}
+.bC .row .price-box{flex:0 0 auto;text-align:right;min-width:170px}
+.bC .opt{font-size:12.5px;color:#5a6b80;padding:4px 0;display:flex;justify-content:space-between;gap:16px;border-bottom:1px dotted #dbe3ed}
+.bC .opt:last-child{border-bottom:none}
+.bC .opt b{color:#0b3d91;font-variant-numeric:tabular-nums}
+.bC .foot{padding:26px 0 44px;color:#8494a8;font-size:12px}
+.bC .infobox{background:#fff;border:1px solid #dbe3ed;border-left:3px solid #0b3d91;border-radius:0 5px 5px 0;padding:15px 18px;margin:20px 0;font-size:12.5px;color:#5a6b80;line-height:1.85}
+@media(max-width:640px){.bC .row{flex-direction:column}.bC .row .price-box{text-align:left;width:100%}}
+</style>
+</head>
+<body>
+<div class="backbar"><div class="wrap"><a href="../">← 실습 사이트 목록으로</a></div></div><div class="bC"><div class="nav"><div class="wrap"><div class="logo">PLAN OFFICE<small>사무환경 토탈 솔루션</small></div></div></div>
+<div class="band"><div class="wrap"><h2>단가표</h2><p>수량 구간별 단가 · <span id="today"></span> 기준 · 부가세 별도</p></div></div>
+<div class="wrap">
+<div class="infobox">본 단가표는 사업자 구매 기준입니다. 100개 이상 대량 구매 시 별도 견적을 문의해 주십시오. 표시 금액은 부가세 별도입니다.</div>
+<div class="row"><div class="info"><div class="code">PO-1100</div><div class="nm">오피스 데스크 오거나이저</div><div class="ds">ABS 소재. 사무실 대량 구매용 기본형.</div></div><div class="price-box"><div class="opt"><span>1~9개</span><b>27,500원</b></div><div class="opt"><span>10~49개</span><b>25,300원</b></div><div class="opt"><span>50개 이상</span><b>22,800원</b></div></div></div><div class="row"><div class="info"><div class="code">PO-1140</div><div class="nm">노트북 스탠드 스틸</div><div class="ds">분체도장 마감. 하중 8kg. A/S 2년.</div></div><div class="price-box"><div class="opt"><span>1~9개</span><b>26,800원</b></div><div class="opt"><span>10~49개</span><b>24,100원</b></div><div class="opt"><span>50개 이상</span><b>21,500원</b></div></div></div><div class="row"><div class="info"><div class="code">PO-1180</div><div class="nm">모니터 받침대 표준형</div><div class="ds">높이 8cm. 서랍 1단 포함.</div></div><div class="price-box"><div class="opt"><span>1~9개</span><b>41,000원</b></div><div class="opt"><span>10~49개</span><b>37,800원</b></div><div class="opt"><span>50개 이상</span><b>34,200원</b></div></div></div><div class="row"><div class="info"><div class="code">PO-1220</div><div class="nm">케이블 정리 클립 (12P)</div><div class="ds">실리콘 재질. 케이블 지름 3~7mm 대응.</div></div><div class="price-box"><div class="opt"><span>1~9세트</span><b>9,500원</b></div><div class="opt"><span>10~49세트</span><b>8,300원</b></div><div class="opt"><span>50세트 이상</span><b>7,100원</b></div></div></div><div class="row"><div class="info"><div class="code">PO-1260</div><div class="nm">데스크 매트 대형</div><div class="ds">PU 레더. 800 x 400mm. 5색 운영.</div></div><div class="price-box"><div class="opt"><span>1~9개</span><b>46,000원</b></div><div class="opt"><span>10~49개</span><b>42,500원</b></div><div class="opt"><span>50개 이상</span><b>38,900원</b></div></div></div>
+<div class="foot">PLAN OFFICE · 이 페이지는 실습용으로 만들어진 가상의 브랜드입니다. 실재하지 않습니다.</div>
+</div></div>
+<script>
+
+function pad(n){ return (n<10?'0':'')+n; }
+function ymd(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function won(n){ return n.toLocaleString('ko-KR'); }
+var NOW=new Date();
+document.getElementById('today').textContent=ymd(NOW);</script>
+</body>
+</html>

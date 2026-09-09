@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2026 사무환경 박람회 | 참관 사전등록</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo","Noto Sans KR",sans-serif;font-size:14px;line-height:1.6;color:#222}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit;cursor:pointer}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+.backbar{background:#12161c;color:#98a3b1;font-size:12.5px;padding:9px 0}
+.backbar a{color:#8fb6e8}
+.backbar a:hover{text-decoration:underline}
+.toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);background:#12161c;color:#fff;padding:12px 20px;border-radius:6px;font-size:13.5px;box-shadow:0 4px 18px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .2s,bottom .2s;z-index:60}
+.toast.show{opacity:1;bottom:44px}
+
+.bF{background:#f7f8fa;min-height:100vh}
+.bF .nav{background:#fff;border-bottom:1px solid #e3e7ec;padding:18px 0}
+.bF .logo{font-size:19px;font-weight:700;color:#1a4d8f}
+.bF .card{background:#fff;border:1px solid #e3e7ec;border-radius:7px;padding:28px 30px;margin:26px 0}
+.bF h2{margin:0 0 6px;font-size:20px}
+.bF .sub{color:#7a8698;font-size:13px;margin:0 0 24px}
+.bF .fr{display:flex;gap:16px;margin-bottom:15px;align-items:flex-start}
+.bF .fr label{flex:0 0 118px;padding-top:9px;font-size:13.5px;color:#4a5768}
+.bF .fr label .req{color:#d0342c;margin-left:2px}
+.bF .fr .fc{flex:1}
+.bF input,.bF select,.bF textarea{width:100%;padding:9px 11px;border:1px solid #d3dae2;border-radius:5px;font-size:13.5px;font-family:inherit}
+.bF textarea{min-height:84px;resize:vertical}
+.bF .actions{display:flex;gap:9px;justify-content:flex-end;margin-top:20px;padding-top:18px;border-top:1px solid #eef1f4}
+.bF .btn{padding:10px 18px;border:1px solid #d3dae2;background:#fff;border-radius:5px;font-size:14px}
+.bF .btn-p{background:#1a4d8f;border-color:#1a4d8f;color:#fff;font-weight:600}
+.bF .err{color:#d0342c;font-size:13px;min-height:18px;margin:-4px 0 10px}
+.bF table{width:100%;border-collapse:collapse;font-size:13px}
+.bF th{background:#f2f5f8;padding:10px;text-align:left;font-size:12.5px;color:#4a5768;border-bottom:1px solid #e3e7ec}
+.bF td{padding:10px;border-bottom:1px solid #eef1f4}
+.bF .empty{padding:30px 0;text-align:center;color:#98a3b1;font-size:13.5px}
+.bF .foot{padding:26px 0 44px;color:#98a3b1;font-size:12px}
+@media(max-width:640px){.bF .fr{flex-direction:column;gap:6px}.bF .fr label{flex:none;padding-top:0}}
+</style>
+</head>
+<body>
+<div class="backbar"><div class="wrap"><a href="../">← 실습 사이트 목록으로</a></div></div><div class="bF"><div class="nav"><div class="wrap"><div class="logo">2026 사무환경 박람회</div></div></div><div class="wrap">
+<div class="card"><h2>참관 사전등록 신청</h2><p class="sub">등록하시면 입장료가 면제됩니다. 항목을 빠짐없이 입력해 주세요.</p>
+<div class="fr"><label for="fName">성명<span class="req">*</span></label><div class="fc"><input id="fName" placeholder="이름을 입력하세요"></div></div>
+<div class="fr"><label for="fCompany">회사명<span class="req">*</span></label><div class="fc"><input id="fCompany" placeholder="회사명을 입력하세요"></div></div>
+<div class="fr"><label for="fPhone">연락처<span class="req">*</span></label><div class="fc"><input id="fPhone" placeholder="010-0000-0000"></div></div>
+<div class="fr"><label for="fEmail">이메일</label><div class="fc"><input id="fEmail" placeholder="name@company.co.kr"></div></div>
+<div class="fr"><label for="fCourse">참관 시간<span class="req">*</span></label><div class="fc"><select id="fCourse">
+<option>오전 A반 (10:00~12:00)</option><option>오후 B반 (14:00~16:00)</option><option>저녁 C반 (19:00~21:00)</option></select></div></div>
+<div class="fr"><label for="fRoute">방문 경로</label><div class="fc"><select id="fRoute">
+<option>홈페이지</option><option>지인 소개</option><option>SNS 광고</option><option>검색</option><option>기타</option></select></div></div>
+<div class="fr"><label for="fMemo">비고</label><div class="fc"><textarea id="fMemo" placeholder="요청 사항이 있으면 적어 주세요"></textarea></div></div>
+<div class="err" id="fErr"></div>
+<div class="actions"><button class="btn" id="btnClear">지우기</button><button class="btn btn-p" id="btnSubmit">신청하기</button></div></div>
+<div class="card"><h2 style="font-size:17px">접수 현황</h2><p class="sub">신청한 건이 아래에 쌓입니다. 총 <span id="cnt">0</span>건</p>
+<div id="listBox"></div></div>
+<div class="foot">2026 사무환경 박람회 · 실습용 페이지입니다. 실제 행사가 아닙니다.</div>
+</div></div><div class="toast" id="toast"></div>
+<script>
+
+var MEM={};
+var Store={
+  key:function(k){return 'nanaext_'+k;},
+  get:function(k,d){ try{var v=localStorage.getItem(this.key(k)); if(v!==null) return JSON.parse(v);}catch(e){}
+    return Object.prototype.hasOwnProperty.call(MEM,k)?MEM[k]:d; },
+  set:function(k,v){ MEM[k]=v; try{localStorage.setItem(this.key(k),JSON.stringify(v));}catch(e){} }
+};
+function pad(n){return (n<10?'0':'')+n;}
+function ymdhm(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');
+  clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show');},2600);}
+function get(){ return Store.get('applied',[]); }
+
+function render(){
+  var list=get();
+  document.getElementById('cnt').textContent=list.length;
+  var box=document.getElementById('listBox');
+  if(!list.length){ box.innerHTML='<div class="empty">아직 접수된 신청이 없습니다.</div>'; return; }
+  var h='<table id="appliedTable"><thead><tr><th style="width:56px">번호</th><th>성명</th><th>회사명</th><th>연락처</th><th>참관 시간</th><th>접수일시</th></tr></thead><tbody>';
+  list.forEach(function(a,i){
+    h+='<tr><td>'+(list.length-i)+'</td><td>'+esc(a.name)+'</td><td>'+esc(a.company)+'</td><td>'+esc(a.phone)+'</td><td>'+esc(a.course)+'</td><td>'+a.at+'</td></tr>';
+  });
+  h+='</tbody></table><div class="actions"><button class="btn" id="btnWipe">접수 내역 비우기</button></div>';
+  box.innerHTML=h;
+  document.getElementById('btnWipe').addEventListener('click',function(){
+    if(confirm('접수 내역을 모두 지웁니다. 계속할까요?')){ Store.set('applied',[]); render(); toast('접수 내역을 비웠습니다.'); }
+  });
+}
+document.getElementById('btnSubmit').addEventListener('click',function(){
+  var name=document.getElementById('fName').value.trim();
+  var company=document.getElementById('fCompany').value.trim();
+  var phone=document.getElementById('fPhone').value.trim();
+  var err=document.getElementById('fErr');
+  if(!name||!company||!phone){ err.textContent='성명, 회사명, 연락처는 필수 항목입니다.'; return; }
+  err.textContent='';
+  var list=get();
+  list.unshift({name:name,company:company,phone:phone,
+    email:document.getElementById('fEmail').value.trim(),
+    course:document.getElementById('fCourse').value,
+    route:document.getElementById('fRoute').value,
+    memo:document.getElementById('fMemo').value.trim(),
+    at:ymdhm(new Date())});
+  Store.set('applied',list);
+  ['fName','fCompany','fPhone','fEmail','fMemo'].forEach(function(id){document.getElementById(id).value='';});
+  render(); toast('신청이 접수되었습니다. 총 '+list.length+'건');
+});
+document.getElementById('btnClear').addEventListener('click',function(){
+  ['fName','fCompany','fPhone','fEmail','fMemo'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('fErr').textContent='';
+});
+render();
+</script>
+</body>
+</html>
