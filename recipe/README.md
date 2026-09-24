@@ -3,7 +3,7 @@
 - 다운로드 목록: `/astra/recipe/`
 - 개별 레시피: `/astra/recipe/04/` (각 디렉터리에 실제 `index.html`이 있습니다.)
 - 페이지 간 링크는 `index.html`까지 명시하므로, 서버에서 접속할 때뿐 아니라 로컬의 `astra/index.html` 파일을 더블클릭해서 열어도 폴더 색인 대신 해당 페이지로 이동합니다.
-- 기존 `recipe/recipe 04/Chat 답변.pptx`도 그대로 연결합니다. 파일을 이동하거나 바꾸지 않아도 됩니다.
+- 레시피 04의 자료는 `recipe/04/`, 레시피 05의 자료는 `recipe/05/`에 있습니다.
 
 ## 파일 추가
 
@@ -12,7 +12,7 @@
 3. 로컬 확인 시 저장소 루트에서 `python scripts/build_recipes.py`를 실행합니다.
 4. 파일을 GitHub `main` 브랜치에 올리면 `.github/workflows/pages.yml`이 목록과 ZIP을 다시 만들고 사이트를 배포합니다.
 
-GitHub 저장소의 **Settings → Pages → Build and deployment → Source**는 **GitHub Actions**로 설정해야 합니다. 이 작업에서는 원격 설정을 변경하거나 파일을 푸시하지 않았습니다.
+GitHub 저장소의 **Settings → Pages → Build and deployment → Source**는 **GitHub Actions**로 설정해야 합니다.
 
 레시피 개수와 마지막 번호는 고정하지 않습니다. 번호 폴더에 예제 파일을 넣으면 다음 생성 시 해당 번호의 페이지가 생깁니다. `04`, `17`, `105`처럼 번호가 떨어져 있어도 중간 번호를 자동으로 채우지 않습니다. 이전·다음 링크도 실제 등록된 레시피만 연결합니다. `recipe 04`, `recipe_04` 같은 기존 폴더명도 인식합니다.
 
