@@ -108,7 +108,6 @@
   .note h4{ margin:0 0 9px; font-size:15px; letter-spacing:-.3px }
   .note p{ margin:0 0 9px; color:var(--ink2); font-size:13.8px; line-height:1.8 }
   .note p:last-child{ margin-bottom:0 }
-  .note.warn{ border-left:3px solid #d1a24a; border-radius:0 12px 12px 0 }
   .note ul{ margin:0; padding-left:19px; color:var(--ink2); font-size:13.8px; line-height:1.9 }
 
   /* ---- 레시피 대조표 ---- */
@@ -163,8 +162,14 @@
   @media(max-width:680px){.download-banner{padding:28px 24px;min-height:240px;gap:12px}.download-art{width:110px;transform:scale(.7);transform-origin:center}.download-banner p{max-width:220px}.download-banner h2{font-size:28px}}
   @media(max-width:440px){.download-art{display:none}.download-banner{min-height:255px}.download-banner p{max-width:none}}
 </style>
+<link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
+<div class="nana-site-header">
+  <a class="nana-site-logo" href="https://nanalab.kr" aria-label="나나랩 홈페이지">
+    <img src="https://nanalab.kr/logo.png" alt="NaNa Lab" width="2385" height="534" decoding="async">
+  </a>
+</div>
 
 <header class="hero">
   <div class="wrap">
@@ -323,12 +328,6 @@
       </ul>
     </div>
 
-    <div class="note warn">
-      <h4>레시피 43 〈프롬프트 인젝션 방어하기〉를 진행하기 전에는 읽지 마세요</h4>
-      <p>외부 사이트 모음의 경쟁사 페이지 두 곳에는 아스트라에게 말을 거는 문장이 숨어 있습니다.
-         먼저 레시피 36으로 가격을 수집해 보고, 결과가 이상하게 나오는지 확인한 다음
-         레시피 43에서 그 문장을 찾아보세요. 순서를 지키면 훨씬 인상 깊게 남습니다.</p>
-    </div>
   </section>
 
 </main>
@@ -337,6 +336,7 @@
   <div class="wrap">
     <b>Astra Playground</b> · 실습 사이트와 예제 파일<br>
     이 페이지의 모든 사이트는 교육 목적으로 만들어진 가상의 서비스입니다. 실재하는 기업·브랜드와 관련이 없습니다.
+    <p class="nana-copyright">Copyright (c) <a href="https://bhban.kr">반병현</a> all right reserved.</p>
   </div>
 </footer>
 

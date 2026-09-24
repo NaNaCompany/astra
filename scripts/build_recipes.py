@@ -29,6 +29,7 @@ def size_label(size):
 
 def shell(title, body, *, detail=False, script=False):
     prefix = '../' if detail else './'
+    site_assets = '../../assets/' if detail else '../assets/'
     home = '../../index.html' if detail else '../index.html'
     back_url = '../index.html'
     back_text = '← 예제 파일 전체 보기' if detail else '← 실습 사이트로'
@@ -40,16 +41,24 @@ def shell(title, body, *, detail=False, script=False):
   <title>{esc(title)} · 아스트라 실습 자료</title>
   <meta name="description" content="책의 레시피별 예제 파일을 내려받고 아스트라 실습을 시작하세요.">
   <link rel="stylesheet" href="{prefix}assets/recipe.css">
+  <link rel="stylesheet" href="{site_assets}site.css">
 {f'  <script src="{prefix}assets/recipe.js" defer></script>' if script else ''}
 </head>
 <body>
   <a class="skip" href="#content">본문 바로가기</a>
+  <div class="nana-site-header">
+    <a class="nana-site-logo" href="https://nanalab.kr" aria-label="나나랩 홈페이지">
+      <img src="https://nanalab.kr/logo.png" alt="NaNa Lab" width="2385" height="534" decoding="async">
+    </a>
+  </div>
   <nav class="nav" aria-label="주 메뉴"><div class="wrap">
     <a class="brand" href="{home}"><span>Astra</span> Playground</a>
     <a class="back" href="{back_url}">{back_text}</a>
   </div></nav>
   {body}
-  <footer class="foot"><div class="wrap">Astra Playground · 레시피별 예제 파일</div></footer>
+  <footer class="foot"><div class="wrap">Astra Playground · 레시피별 예제 파일
+    <p class="nana-copyright">Copyright (c) <a href="https://bhban.kr">반병현</a> all right reserved.</p>
+  </div></footer>
 </body>
 </html>
 '''

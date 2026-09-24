@@ -1,0 +1,86 @@
+/* Shared publisher branding for every Astra Playground page. */
+.nana-site-header {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  min-height: 72px;
+  padding: 14px 24px;
+  background: #fff;
+  border-bottom: 1px solid #e5e9ee;
+}
+
+.nana-site-logo {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+}
+
+.nana-site-logo img {
+  display: block;
+  width: 180px;
+  max-width: 100%;
+  height: auto;
+}
+
+.nana-copyright {
+  margin: 14px 0 0;
+  color: #526174;
+  font: 13px/1.65 "Malgun Gothic", "맑은 고딕", sans-serif;
+  overflow-wrap: anywhere;
+}
+
+.nana-copyright a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.nana-copyright a:hover {
+  color: #185bd8;
+}
+
+.nana-site-logo:focus-visible,
+.nana-copyright a:focus-visible {
+  outline: 3px solid #185bd8;
+  outline-offset: 5px;
+}
+
+.nana-site-footer {
+  box-sizing: border-box;
+  min-height: 88px;
+  padding: 28px 24px;
+  border-top: 1px solid #e5e9ee;
+  background: #fff;
+}
+
+.nana-site-footer .nana-copyright {
+  margin: 0;
+}
+
+/* Leave room for branding in the full-height portal and seller views. */
+body > #loginView,
+body > #oauthView,
+body > #appView {
+  min-height: calc(100vh - 160px);
+}
+
+@media (max-width: 520px) {
+  .nana-site-header {
+    min-height: 64px;
+    padding: 12px 20px;
+  }
+
+  .nana-site-logo img {
+    width: 160px;
+  }
+
+  .nana-site-footer {
+    padding: 28px 20px;
+  }
+
+  body > #loginView,
+  body > #oauthView,
+  body > #appView {
+    min-height: calc(100vh - 152px);
+  }
+}

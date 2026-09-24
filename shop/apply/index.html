@@ -40,8 +40,14 @@ button{font-family:inherit;cursor:pointer}
 .bF .foot{padding:26px 0 44px;color:#98a3b1;font-size:12px}
 @media(max-width:640px){.bF .fr{flex-direction:column;gap:6px}.bF .fr label{flex:none;padding-top:0}}
 </style>
+<link rel="stylesheet" href="../../assets/site.css">
 </head>
 <body>
+<div class="nana-site-header">
+  <a class="nana-site-logo" href="https://nanalab.kr" aria-label="나나랩 홈페이지">
+    <img src="https://nanalab.kr/logo.png" alt="NaNa Lab" width="2385" height="534" decoding="async">
+  </a>
+</div>
 <div class="backbar"><div class="wrap"><a href="../index.html">← 실습 사이트 목록으로</a></div></div><div class="bF"><div class="nav"><div class="wrap"><div class="logo">2026 사무환경 박람회</div></div></div><div class="wrap">
 <div class="card"><h2>참관 사전등록 신청</h2><p class="sub">등록하시면 입장료가 면제됩니다. 항목을 빠짐없이 입력해 주세요.</p>
 <div class="fr"><label for="fName">성명<span class="req">*</span></label><div class="fc"><input id="fName" placeholder="이름을 입력하세요"></div></div>
@@ -57,7 +63,9 @@ button{font-family:inherit;cursor:pointer}
 <div class="actions"><button class="btn" id="btnClear">지우기</button><button class="btn btn-p" id="btnSubmit">신청하기</button></div></div>
 <div class="card"><h2 style="font-size:17px">접수 현황</h2><p class="sub">신청한 건이 아래에 쌓입니다. 총 <span id="cnt">0</span>건</p>
 <div id="listBox"></div></div>
-<div class="foot">2026 사무환경 박람회 · 실습용 페이지입니다. 실제 행사가 아닙니다.</div>
+<footer class="foot">2026 사무환경 박람회 · 실습용 페이지입니다. 실제 행사가 아닙니다.
+  <p class="nana-copyright">Copyright (c) <a href="https://bhban.kr">반병현</a> all right reserved.</p>
+</footer>
 </div></div><div class="toast" id="toast"></div>
 <script>
 
