@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GPT-6 아스트라 업무 자동화 · 실습 사이트</title>
+<title>Astra Playground · 실습 사이트와 예제 파일</title>
 <style>
   :root{
     --ink:#12161c; --ink2:#4a5563; --ink3:#8892a0;
@@ -147,26 +147,56 @@
     .hero .meta{ gap:20px }
     .card-in{ padding:22px 20px 24px }
   }
+  /* Main download entrance */
+  .downloads{position:relative;margin-top:-30px;padding-bottom:4px}
+  .download-banner{display:flex;align-items:center;justify-content:space-between;gap:30px;min-height:260px;padding:36px 42px;background:linear-gradient(115deg,#1354c9,#2579ed);border:1px solid #5494f0;border-radius:20px;box-shadow:0 16px 36px rgba(21,75,159,.2);color:#fff;overflow:hidden}
+  .download-banner:focus-visible{outline:4px solid #f4bb4d;outline-offset:5px}
+  .download-banner:hover{background:linear-gradient(115deg,#114abd,#1b70e6)}
+  .download-label{font-size:12px;font-weight:700;letter-spacing:1.5px;color:#c8ddff;margin-bottom:12px}
+  .download-banner h2{font-size:clamp(27px,4.2vw,42px);line-height:1.25;letter-spacing:-1.5px;margin:0 0 13px;color:white}
+  .download-banner p{color:#d8e7ff;font-size:14px;margin:0 0 22px}
+  .download-cta{display:inline-flex;align-items:center;gap:20px;padding:11px 18px;border-radius:9px;background:white;color:#1856bb;font-size:14px;font-weight:800}
+  .download-art{position:relative;display:grid;place-items:center;width:205px;height:175px;flex:none}
+  .download-sheet{position:absolute;width:115px;height:140px;border:2px solid #d9e7ff;border-radius:12px;background:#f5f9ff;box-shadow:0 7px 15px #08409e33}
+  .download-sheet.back{transform:rotate(-17deg) translateX(-37px);background:#acd0ff}.download-sheet.mid{transform:rotate(13deg) translateX(34px);background:#d5e7ff}
+  .download-sheet.front{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;color:#185bd8;font-size:13px;font-weight:800}
+  @media(max-width:680px){.download-banner{padding:28px 24px;min-height:240px;gap:12px}.download-art{width:110px;transform:scale(.7);transform-origin:center}.download-banner p{max-width:220px}.download-banner h2{font-size:28px}}
+  @media(max-width:440px){.download-art{display:none}.download-banner{min-height:255px}.download-banner p{max-width:none}}
 </style>
 </head>
 <body>
 
 <header class="hero">
   <div class="wrap">
-    <div class="eyebrow">PRACTICE SITES</div>
-    <h1>책을 따라 하는 동안<br><em>마음껏 망가뜨려도 되는</em> 회사</h1>
-    <p>『GPT-6 아스트라 업무 자동화 69제』의 실습용 사이트입니다.
+    <div class="eyebrow">ASTRA PLAYGROUND</div>
+    <h1>Astra 실습을 위한<br><em>Playground</em></h1>
+    <p>아스트라의 다양한 기능을 직접 익혀 보는 실습 공간입니다.
        아스트라에게 로그인을 시키고, 표를 긁게 하고, 결재를 올리고, 고객에게 답장을 보내는 연습을
        진짜 계정 대신 여기서 합니다. 여기 있는 회사와 사람, 주문과 리뷰는 전부 가상입니다.</p>
     <div class="meta">
-      <div><b>5</b>개 실습 사이트</div>
-      <div><b>16</b>개 레시피에서 사용</div>
-      <div><b>0</b>건의 실제 발송</div>
+      <div><b>예제 파일</b>레시피별 다운로드</div>
+      <div><b>가상 서비스</b>업무 자동화 실습</div>
+      <div><b>반복 실습</b>초기화하고 다시 시작</div>
     </div>
   </div>
 </header>
 
 <main class="wrap">
+
+  <section class="downloads" aria-label="예제 파일 다운로드">
+    <a class="download-banner" href="./recipe/index.html">
+      <div>
+        <div class="download-label">EXAMPLE FILES / DOWNLOAD</div>
+        <h2>책 속 예제 파일,<br>여기서 내려받으세요.</h2>
+        <p>레시피 번호를 고르고 필요한 실습 자료를 한 번에 받으세요.</p>
+        <span class="download-cta">레시피별 예제 다운로드 <span aria-hidden="true">→</span></span>
+      </div>
+      <div class="download-art" aria-hidden="true">
+        <div class="download-sheet back"></div><div class="download-sheet mid"></div>
+        <div class="download-sheet front"><svg width="44" height="48" viewBox="0 0 44 48" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 5v25m-9-9 9 9 9-9M7 34v8h30v-8"/></svg>예제 파일</div>
+      </div>
+    </a>
+  </section>
 
   <section class="section">
     <div class="section-h"><h2>실습 사이트</h2><span>레시피에서 지정한 곳으로 바로 들어가세요</span></div>
@@ -174,7 +204,7 @@
 
     <div class="grid">
 
-      <a class="card c-portal" href="./portal/">
+      <a class="card c-portal" href="./portal/index.html">
         <div class="card-top"></div>
         <div class="card-in">
           <div class="path">/astra/portal</div>
@@ -186,7 +216,7 @@
         </div>
       </a>
 
-      <a class="card c-seller" href="./seller/">
+      <a class="card c-seller" href="./seller/index.html">
         <div class="card-top"></div>
         <div class="card-in">
           <div class="path">/astra/seller</div>
@@ -198,7 +228,7 @@
         </div>
       </a>
 
-      <a class="card c-sns" href="./sns/">
+      <a class="card c-sns" href="./sns/index.html">
         <div class="card-top"></div>
         <div class="card-in">
           <div class="path">/astra/sns</div>
@@ -210,7 +240,7 @@
         </div>
       </a>
 
-      <a class="card c-shop" href="./shop/">
+      <a class="card c-shop" href="./shop/index.html">
         <div class="card-top"></div>
         <div class="card-in">
           <div class="path">/astra/shop</div>
@@ -222,7 +252,7 @@
         </div>
       </a>
 
-      <a class="card c-vuln" href="./vuln/">
+      <a class="card c-vuln" href="./vuln/index.html">
         <div class="card-top"></div>
         <div class="card-in">
           <div class="path">/astra/vuln</div>
@@ -246,37 +276,37 @@
         <thead><tr><th>번호</th><th>레시피</th><th>실습할 곳</th></tr></thead>
         <tbody>
           <tr><td class="num">13</td><td class="ttl">내장 브라우저 열고 로그인 상태 유지하기</td>
-              <td class="wh"><a class="where w-portal" href="./portal/">나나랩 업무 포털</a></td></tr>
+              <td class="wh"><a class="where w-portal" href="./portal/index.html">나나랩 업무 포털</a></td></tr>
           <tr><td class="num">14</td><td class="ttl">연동 앱이 없는 국내 서비스를 브라우저로 열어 자료 읽기</td>
-              <td class="wh"><a class="where w-portal" href="./portal/">나나랩 업무 포털</a><span class="pth">공지 · 문서함</span></td></tr>
+              <td class="wh"><a class="where w-portal" href="./portal/index.html">나나랩 업무 포털</a><span class="pth">공지 · 문서함</span></td></tr>
           <tr><td class="num">15</td><td class="ttl">허용 사이트 목록 관리하고 기록 지우기</td>
-              <td class="wh"><a class="where w-portal" href="./portal/">나나랩 업무 포털</a></td></tr>
+              <td class="wh"><a class="where w-portal" href="./portal/index.html">나나랩 업무 포털</a></td></tr>
           <tr><td class="num">32</td><td class="ttl">로그인과 계정 다루기</td>
-              <td class="wh"><a class="where w-portal" href="./portal/">나나랩 업무 포털</a><span class="pth">로그인 · 계정 동의 화면</span></td></tr>
+              <td class="wh"><a class="where w-portal" href="./portal/index.html">나나랩 업무 포털</a><span class="pth">로그인 · 계정 동의 화면</span></td></tr>
           <tr><td class="num">33</td><td class="ttl">고객 문의 데이터를 뽑아 유형별로 분류하기</td>
-              <td class="wh"><a class="where w-seller" href="./seller/">나나샵 셀러 관리자</a><span class="pth">고객 문의</span></td></tr>
+              <td class="wh"><a class="where w-seller" href="./seller/index.html">나나샵 셀러 관리자</a><span class="pth">고객 문의</span></td></tr>
           <tr><td class="num">34</td><td class="ttl">인사관리 시스템 화면의 표를 엑셀 파일로 다운로드하기</td>
-              <td class="wh"><a class="where w-portal" href="./portal/">나나랩 업무 포털</a><span class="pth">인사 · 근태</span></td></tr>
+              <td class="wh"><a class="where w-portal" href="./portal/index.html">나나랩 업무 포털</a><span class="pth">인사 · 근태</span></td></tr>
           <tr><td class="num">35</td><td class="ttl">온라인 신청 양식 20건을 대신 채워 넣기</td>
-              <td class="wh"><a class="where w-shop" href="./shop/apply/">사무환경 박람회 사전등록</a><span class="pth">/astra/shop/apply</span></td></tr>
+              <td class="wh"><a class="where w-shop" href="./shop/apply/index.html">사무환경 박람회 사전등록</a><span class="pth">/astra/shop/apply</span></td></tr>
           <tr><td class="num">36</td><td class="ttl">경쟁사 제품 가격을 주기적으로 훑어 표로 정리하기</td>
-              <td class="wh"><a class="where w-shop" href="./shop/">외부 사이트 모음</a><span class="pth">경쟁사 3곳</span></td></tr>
+              <td class="wh"><a class="where w-shop" href="./shop/index.html">외부 사이트 모음</a><span class="pth">경쟁사 3곳</span></td></tr>
           <tr><td class="num">37</td><td class="ttl">SNS 댓글 자동으로 확인하고 답글 달기</td>
-              <td class="wh"><a class="where w-sns" href="./sns/">나나샵 소셜</a></td></tr>
+              <td class="wh"><a class="where w-sns" href="./sns/index.html">나나샵 소셜</a></td></tr>
           <tr><td class="num">38</td><td class="ttl">사내 그룹웨어에 결재 문서 올리기 (제출 직전에 멈추게 하기)</td>
-              <td class="wh"><a class="where w-portal" href="./portal/">나나랩 업무 포털</a><span class="pth">전자결재</span></td></tr>
+              <td class="wh"><a class="where w-portal" href="./portal/index.html">나나랩 업무 포털</a><span class="pth">전자결재</span></td></tr>
           <tr><td class="num">43</td><td class="ttl">프롬프트 인젝션 방어하기</td>
-              <td class="wh"><a class="where w-shop" href="./shop/">외부 사이트 모음</a><span class="pth">경쟁사 3곳</span></td></tr>
+              <td class="wh"><a class="where w-shop" href="./shop/index.html">외부 사이트 모음</a><span class="pth">경쟁사 3곳</span></td></tr>
           <tr><td class="num">48</td><td class="ttl">고객 문의가 오면 자동으로 답변하기</td>
-              <td class="wh"><a class="where w-seller" href="./seller/">나나샵 셀러 관리자</a><span class="pth">고객 문의</span></td></tr>
+              <td class="wh"><a class="where w-seller" href="./seller/index.html">나나샵 셀러 관리자</a><span class="pth">고객 문의</span></td></tr>
           <tr><td class="num">51</td><td class="ttl">오늘 들어온 주문 건수를 요약해서 알림받기</td>
-              <td class="wh"><a class="where w-seller" href="./seller/">나나샵 셀러 관리자</a><span class="pth">주문</span></td></tr>
+              <td class="wh"><a class="where w-seller" href="./seller/index.html">나나샵 셀러 관리자</a><span class="pth">주문</span></td></tr>
           <tr><td class="num">52</td><td class="ttl">재고가 부족한 품목의 발주서를 만들고, 내가 승인하면 거래처에 메일 보내기</td>
-              <td class="wh"><a class="where w-seller" href="./seller/">나나샵 셀러 관리자</a><span class="pth">재고 · 발주 · 보낸함</span></td></tr>
+              <td class="wh"><a class="where w-seller" href="./seller/index.html">나나샵 셀러 관리자</a><span class="pth">재고 · 발주 · 보낸함</span></td></tr>
           <tr><td class="num">53</td><td class="ttl">주문 후 남은 고객 리뷰에 자동으로 응대하기</td>
-              <td class="wh"><a class="where w-seller" href="./seller/">나나샵 셀러 관리자</a><span class="pth">리뷰</span></td></tr>
+              <td class="wh"><a class="where w-seller" href="./seller/index.html">나나샵 셀러 관리자</a><span class="pth">리뷰</span></td></tr>
           <tr><td class="num">58</td><td class="ttl">웹사이트 취약점 진단하기</td>
-              <td class="wh"><a class="where w-vuln" href="./vuln/">나나 멤버스</a><span class="pth">홈·게시판·마이페이지·관리자</span></td></tr>
+              <td class="wh"><a class="where w-vuln" href="./vuln/index.html">나나 멤버스</a><span class="pth">홈·게시판·마이페이지·관리자</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -288,7 +318,7 @@
       <ul>
         <li>여기 있는 회사·사람·주문·리뷰는 모두 지어낸 것입니다. 실제 데이터가 아닙니다.</li>
         <li>메일 발송, 결재 상신, 답글 등록은 <b>실제로 나가지 않습니다.</b> 각 사이트의 보낸함이나 목록에만 쌓입니다.</li>
-        <li>망가뜨려도 됩니다. 각 사이트 안에 <b>초기화</b> 버튼이 있어 처음 상태로 되돌릴 수 있습니다.</li>
+        <li>각 사이트 안의 <b>초기화</b> 버튼으로 처음 상태로 되돌려 다시 실습할 수 있습니다.</li>
         <li>기록은 지금 쓰는 브라우저 안에만 남습니다. 다른 기기에서 열면 처음 상태로 보입니다.</li>
       </ul>
     </div>
@@ -305,7 +335,7 @@
 
 <footer class="foot">
   <div class="wrap">
-    <b>GPT-6 아스트라 업무 자동화 69제</b> · 실습용 사이트 모음<br>
+    <b>Astra Playground</b> · 실습 사이트와 예제 파일<br>
     이 페이지의 모든 사이트는 교육 목적으로 만들어진 가상의 서비스입니다. 실재하는 기업·브랜드와 관련이 없습니다.
   </div>
 </footer>
