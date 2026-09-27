@@ -66,6 +66,7 @@ def shell(title, body, *, detail=False, script=False):
 
 def build():
     config = json.loads((RECIPES / 'catalog.json').read_text(encoding='utf-8'))
+    excluded_files = set(config.get('excluded_files', []))
     titles = {}
     for key, title in config.get('titles', {}).items():
         if not str(key).isascii() or not str(key).isdigit() or int(key) < 1:
@@ -84,6 +85,8 @@ def build():
         for path in sorted(folder.rglob('*')):
             relative = path.relative_to(folder)
             if not path.is_file() or path.is_symlink() or any(part.startswith('.') or part.startswith('~$') for part in relative.parts):
+                continue
+            if path.relative_to(RECIPES).as_posix() in excluded_files:
                 continue
             if path == folder / 'index.html':
                 continue

@@ -3,14 +3,15 @@
 - 다운로드 목록: `/astra/recipe/`
 - 개별 레시피: `/astra/recipe/04/` (각 디렉터리에 실제 `index.html`이 있습니다.)
 - 페이지 간 링크는 `index.html`까지 명시하므로, 서버에서 접속할 때뿐 아니라 로컬의 `astra/index.html` 파일을 더블클릭해서 열어도 폴더 색인 대신 해당 페이지로 이동합니다.
-- 레시피 04의 자료는 `recipe/04/`, 레시피 05의 자료는 `recipe/05/`, 레시피 14의 사원명부는 `recipe/14/`에 있습니다.
+- 레시피 04의 자료는 `recipe/04/`, 레시피 05의 자료는 `recipe/05/`, 레시피 13의 사원명부는 `recipe/13/`에 있습니다. 폴더 정리 자료는 `recipe/18/`, 문서 찾기 자료는 `recipe/19/`에 있습니다.
 
 ## 파일 추가
 
 1. `recipe/04/`, `recipe/05/`처럼 해당 번호 폴더에 예제 파일을 넣습니다. 폴더 안에 하위 폴더를 두어도 됩니다.
 2. 파일이 있는 레시피만 자동으로 목록에 등록됩니다. 제목을 표시하려면 `recipe/catalog.json`의 `titles`에 번호와 제목을 적습니다. 제목만 등록해 두어도 예제 파일이 없으면 페이지나 빈 폴더를 만들지 않습니다.
-3. 로컬 확인 시 저장소 루트에서 `python scripts/build_recipes.py`를 실행합니다.
-4. 파일을 GitHub `main` 브랜치에 올리면 `.github/workflows/pages.yml`이 목록과 ZIP을 다시 만들고 사이트를 배포합니다.
+3. 다운로드 목록에서 제외할 파일은 `catalog.json`의 `excluded_files`에 `13/파일명.xlsx`처럼 `recipe/` 기준 상대 경로를 적습니다. 제외된 파일은 다운로드 목록과 전체 ZIP에 포함되지 않습니다. 이 설정은 목록 생성용입니다. 배포하지 않을 파일은 Git에 추가하지 마세요.
+4. 로컬 확인 시 저장소 루트에서 `python scripts/build_recipes.py`를 실행합니다.
+5. 파일을 GitHub `main` 브랜치에 올리면 `.github/workflows/pages.yml`이 목록과 ZIP을 다시 만들고 사이트를 배포합니다.
 
 GitHub 저장소의 **Settings → Pages → Build and deployment → Source**는 **GitHub Actions**로 설정해야 합니다.
 
