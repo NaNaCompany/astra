@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Ledger Lab · 거래원장 분석실</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+  <aside class="sidebar">
+    <a class="nana-site-logo dashboard-publisher" href="https://nanalab.kr" aria-label="나나랩 홈페이지"><img src="https://nanalab.kr/logo.png" alt="NaNa Lab" width="2385" height="534" decoding="async"></a>
+    <a class="brand" href="#overview" aria-label="Ledger Lab 홈"><span class="brand-mark">L<span></span></span><span>LEDGER<span class="brand-light">LAB</span><small>거래 데이터 분석실</small></span></a>
+    <div class="workspace-tag"><span class="status-dot"></span>LOCAL WORKSPACE</div>
+    <nav class="main-nav" aria-label="주요 화면">
+      <button class="nav-item active" data-view="overview"><span class="nav-icon">◫</span> 대시보드 <span class="nav-short">01</span></button>
+      <button class="nav-item" data-view="methods"><span class="nav-icon">⌘</span> 분석 라이브러리 <span class="nav-count">96</span></button>
+      <button class="nav-item" data-view="data"><span class="nav-icon">▦</span> 거래 데이터 <span class="nav-short">03</span></button>
+      <button class="nav-item" data-view="audit"><span class="nav-icon">◷</span> 실행 기록 <span id="drop-nav" class="nav-count">0</span></button>
+    </nav>
+    <p class="nav-label">분석 분야</p>
+    <nav id="category-nav" class="category-nav" aria-label="분석 분야"></nav>
+    <div class="sidebar-bottom"><span class="offline-icon">↳</span><strong>이 브라우저에서 분석</strong><p>서버 연결 없이 원장 데이터를<br>로컬에서 계산합니다.</p><div class="file-label">XLSX <span>거래원장_8000건</span></div></div>
+  </aside>
+
+  <div class="app-shell">
+    <header class="topbar"><div class="breadcrumb"><a href="../index.html">Astra Playground</a> <span>/</span> 거래원장 분석</div><div class="topbar-actions"><span class="local-badge"><i></i> 브라우저에서 계산</span><button class="button ghost small" id="export-results">결과 CSV 내보내기 <span>↗</span></button></div></header>
+    <main id="main">
+      <div class="page-heading"><div><p class="eyebrow">YOUR DATA, IN PERSPECTIVE</p><h1 id="view-title">거래의 흐름을 한눈에.</h1><p id="view-subtitle">8,000건의 거래에서 규모, 변화, 그리고 숨은 패턴을 살펴보세요.</p></div><div class="source-chip"><span class="source-icon">▤</span><div><b>거래원장_8000건.xlsx</b><small>2026.07.01 — 09.30 · 실습용 가상 데이터</small></div></div></div>
+
+      <section class="filter-panel" aria-label="데이터 필터">
+        <div class="filter-field date-field"><label for="date-from">기간</label><div class="date-range"><input type="date" id="date-from" value="2026-07-01" aria-label="시작일"><span>—</span><input type="date" id="date-to" value="2026-09-30" aria-label="종료일"></div></div>
+        <div class="filter-field"><label for="type-filter">거래 구분</label><select id="type-filter"><option value="">매출 + 매입</option><option>매출</option><option>매입</option></select></div>
+        <div class="filter-field"><label for="department-filter">부서</label><select id="department-filter"><option value="">모든 부서</option></select></div>
+        <div class="filter-field"><label for="payment-filter">결제수단</label><select id="payment-filter"><option value="">모든 결제수단</option></select></div>
+        <div class="filter-field"><label for="group-filter">집단 비교 기준</label><select id="group-filter"><option value="department">부서</option><option value="payment">결제수단</option><option value="type">매출 / 매입</option></select></div>
+        <button class="button primary" id="apply-filters">필터 적용 <span>↗</span></button><button class="icon-button" id="reset-filters" title="필터 초기화" aria-label="필터 초기화">↺</button>
+      </section>
+      <div class="execution-strip" aria-live="polite"><div><span id="run-dot" class="status-dot"></span><span id="run-message">분석 모듈을 준비하고 있습니다.</span></div><div class="execution-right"><span id="row-count">8,000건</span><span class="separator"></span><span id="run-time">로컬 계산</span><button id="run-again" class="text-button">전체 분석 실행 ↻</button></div></div>
+      <div id="run-progress" class="progress-track"><span></span></div>
+
+      <section id="view-overview" class="view active">
+        <div id="kpi-grid" class="kpi-grid"></div>
+        <div class="overview-grid">
+          <article class="panel trend-panel"><div class="panel-heading"><div><p class="eyebrow">TRANSACTION FLOW</p><h2>시간에 따른 거래 흐름</h2><p>거래일별 매출액과 매입액을 함께 확인합니다.</p></div><div class="segmented" aria-label="집계 주기"><button data-period="day" class="active">일별</button><button data-period="week">주별</button><button data-period="month">월별</button></div></div><div id="trend-chart" class="chart large-chart"></div><div id="trend-footnote" class="chart-footnote"></div></article>
+          <article class="panel department-panel"><div class="panel-heading"><div><p class="eyebrow">DEPARTMENT MIX</p><h2>부서별 거래 규모</h2><p>선택 범위의 총 거래금액 비중</p></div><span class="subtle-icon">↗</span></div><div id="department-chart" class="chart"></div><div id="department-insight" class="insight-inline"></div></article>
+          <article class="panel distribution-panel"><div class="panel-heading"><div><p class="eyebrow">AMOUNT DISTRIBUTION</p><h2>평균만으로는 보이지 않는 것</h2><p>금액 구간별 건수 · 가로축은 로그 간격</p></div><span class="pill neutral">분포</span></div><div id="distribution-chart" class="chart"></div><div id="distribution-summary" class="distribution-summary"></div></article>
+          <article class="panel status-panel"><div class="panel-heading"><div><p class="eyebrow">ANALYSIS COVERAGE</p><h2>분석 실행 현황</h2><p>96개 세부 항목의 현재 상태</p></div><button class="text-button" data-open-methods>전체 보기 ↗</button></div><div id="coverage-chart"></div><div class="status-explainer">조건부 결과는 표본·가정·검증 범위의 제한을 함께 읽어야 합니다. 실패 항목은 결과에서 제외합니다.</div></article>
+        </div>
+        <div class="section-title"><div><p class="eyebrow">START EXPLORING</p><h2>이 데이터에서 먼저 볼 분석</h2></div><button class="text-button" data-open-methods>라이브러리 열기 ↗</button></div><div id="featured-methods" class="method-grid featured"></div>
+        <div class="data-note"><span>ⓘ</span><p>실습용 가상 원장입니다. 모든 통계량·검정·모형은 이 데이터의 패턴을 설명합니다. 매출액과 매입액의 차이는 이익 또는 현금흐름을 뜻하지 않습니다.</p></div>
+      </section>
+
+      <section id="view-methods" class="view">
+        <div class="library-toolbar"><div class="search-wrap"><span>⌕</span><input id="method-search" placeholder="기법 이름이나 분석 목적 검색" aria-label="기법 검색"></div><select id="method-status" aria-label="분석 상태"><option value="all">모든 상태</option><option value="ok">실행 완료</option><option value="limited">조건부 결과</option><option value="dropped">제외됨</option><option value="pending">대기 중</option></select><span id="method-count"></span></div>
+        <div id="category-tabs" class="category-tabs" role="group" aria-label="기법 분류"></div><div class="library-note">96개는 지표·시각화·검정·모형 변형·진단을 나눈 항목 수입니다. 서로 독립적인 통계기법 96종이라는 뜻은 아닙니다.</div><div id="method-grid" class="method-grid"></div>
+      </section>
+
+      <section id="view-data" class="view">
+        <article class="panel"><div class="panel-heading"><div><p class="eyebrow">SOURCE DATA</p><h2>계산의 출발점</h2><p>원본 Excel 행 번호로 거래를 다시 찾을 수 있습니다.</p></div><button class="button ghost small" id="export-data">선택 데이터 CSV ↓</button></div><div id="data-table-wrap" class="table-scroll"></div><div class="pagination"><button id="prev-page" class="button ghost small">← 이전</button><span id="data-page-info"></span><button id="next-page" class="button ghost small">다음 →</button></div></article>
+      </section>
+      <section id="view-audit" class="view">
+        <div id="audit-summary" class="audit-summary"></div><article class="panel"><div class="panel-heading"><div><p class="eyebrow">EXECUTION LOG</p><h2>실행 결과와 제외 사유</h2><p>각 항목은 독립적으로 실행합니다. 실패한 기법을 다른 결과로 대체하지 않습니다.</p></div></div><div id="audit-table" class="table-scroll"></div></article><div class="data-note"><span>ⓘ</span><p id="source-details"></p></div>
+      </section>
+      <footer class="page-footer"><span>LEDGER LAB <b>·</b> 거래 데이터 분석</span><a href="../index.html">실습 사이트 목록으로 돌아가기 →</a><p class="nana-copyright">Copyright (c) <a href="https://bhban.kr">반병현</a> all right reserved.</p></footer>
+    </main>
+  </div>
+
+  <dialog id="method-dialog"><div class="modal-header"><div><span id="detail-id" class="eyebrow"></span><h2 id="detail-title"></h2></div><button id="close-dialog" class="icon-button" aria-label="닫기">×</button></div><div id="detail-content"></div></dialog>
+  <div id="toast" role="status"></div>
+  <script src="data.js"></script>
+  <script src="modules/core.js"></script>
+  <script src="modules/models.js"></script>
+  <script src="modules/temporal.js"></script>
+  <script src="charts.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
