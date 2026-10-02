@@ -15,7 +15,7 @@ var HR_PAYROLL = (function () {
     { employeeId: "EMP-002", name: "김서연", email: "gmz7g5ax@nanalab.kr", dept: "인사팀", rank: "과장", base: 4900000 },
     { employeeId: "EMP-003", name: "윤수빈", email: "19lut5web@nanalab.kr", dept: "인사팀", rank: "대리", base: 3800000 },
     { employeeId: "EMP-004", name: "임지훈", email: "kvq2532zr@nanalab.kr", dept: "인사팀", rank: "사원", base: 2900000 },
-    { employeeId: "EMP-005", name: "홍민석", email: "dqhgjv8pq3@nanalab.kr", dept: "마케팅팀", rank: "대리", base: 3850000 },
+    { employeeId: "EMP-005", name: "홍민석", email: "dqhgjv8pq3@nanalab.kr", dept: "물류팀", rank: "대리", base: 3850000 },
     { employeeId: "EMP-006", name: "박소영", email: "g0ql7ofa@nanalab.kr", dept: "마케팅팀", rank: "부장", base: 7200000 },
     { employeeId: "EMP-007", name: "정다은", email: "btakp1w6@nanalab.kr", dept: "마케팅팀", rank: "과장", base: 5000000 },
     { employeeId: "EMP-008", name: "한지우", email: "a5qis4afe@nanalab.kr", dept: "마케팅팀", rank: "사원", base: 3000000 },
