@@ -182,7 +182,9 @@
 
     <div class="login-hint">
       <b>실습용 사이트입니다.</b> 실제 계정이 아니며 입력한 값은 어디로도 전송되지 않습니다.<br>
-      아이디 <b>hong</b> · 비밀번호 <b>nanalab1234</b>
+      인사팀 · 민정식 차장: 아이디 <b>min</b><br>
+      마케팅팀 · 홍민석 대리: 아이디 <b>hong</b><br>
+      공통 비밀번호 <b>nanalab1234</b>
     </div>
   </div>
 </div>
@@ -222,7 +224,7 @@
   <div class="topbar">
     <div class="topbar-logo">나나랩 업무 포털</div>
     <div class="topbar-right">
-      <span id="whoami">홍민석 대리 · 마케팅팀</span>
+      <span id="whoami"></span>
       <button id="btnReset" title="이 사이트에 저장된 실습 데이터를 지웁니다">초기화</button>
       <button id="btnLogout">로그아웃</button>
     </div>
@@ -302,7 +304,11 @@ function isWeekend(d){ var w = d.getDay(); return w===0 || w===6; }
 var NOW = new Date();
 
 /* ---------- 고정 데이터 ---------- */
-var USER = { id:'hong', pw:'nanalab1234', name:'홍민석', rank:'대리', dept:'마케팅팀', email:'hong@nanalab.kr' };
+var USERS = [
+  { id:'hong', pw:'nanalab1234', name:'홍민석', rank:'대리', dept:'마케팅팀', email:'hong@nanalab.kr' },
+  { id:'min', pw:'nanalab1234', name:'민정식', rank:'차장', dept:'인사팀', email:'min@nanalab.kr' }
+];
+var USER = null;
 
 var NOTICES = [
   { id:1, title:'[필독] 4분기 정기 인사평가 일정 안내', dept:'인사팀', writer:'김서연',
@@ -419,15 +425,27 @@ function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
 function won(n){ return n.toLocaleString('ko-KR'); }
 
 /* ---------- 로그인 ---------- */
+function sessionUser(){
+  var session = Store.get('session', null);
+  if(!session || typeof session !== 'object') return null;
+  // 계정 구분이 없던 기존 로그인 기록은 홍민석 계정으로 유지합니다.
+  var id = Object.prototype.hasOwnProperty.call(session, 'userId') ? session.userId : 'hong';
+  return USERS.find(function(user){ return user.id === id; }) || null;
+}
+function startSession(user, via){
+  state.draftPreview = null;
+  Store.set('session', { userId:user.id, at:Date.now(), via:via });
+  enterApp();
+}
 document.getElementById('loginForm').addEventListener('submit', function(e){
   e.preventDefault();
   var id = document.getElementById('loginId').value.trim();
   var pw = document.getElementById('loginPw').value;
   var err = document.getElementById('loginErr');
-  if(id === USER.id && pw === USER.pw){
+  var user = USERS.find(function(account){ return account.id === id && account.pw === pw; });
+  if(user){
     err.textContent = '';
-    Store.set('session', { at: Date.now(), via: 'password' });
-    enterApp();
+    startSession(user, 'password');
   }else{
     err.textContent = '아이디 또는 비밀번호가 올바르지 않습니다.';
   }
@@ -437,13 +455,14 @@ document.getElementById('btnOauthDeny').addEventListener('click', function(){
   show('loginView'); toast('연결이 취소되었습니다.');
 });
 document.getElementById('btnOauthAllow').addEventListener('click', function(){
-  Store.set('session', { at: Date.now(), via: 'oauth' });
   Store.set('oauthGranted', true);
-  enterApp();
+  startSession(USERS[0], 'oauth');
   toast('나나 계정 연결이 완료되었습니다. 5개 권한이 허용되었습니다.');
 });
 document.getElementById('btnLogout').addEventListener('click', function(){
   Store.set('session', null);
+  USER = null;
+  state.draftPreview = null;
   document.getElementById('loginId').value = '';
   document.getElementById('loginPw').value = '';
   document.getElementById('loginErr').textContent = '';
@@ -451,10 +470,13 @@ document.getElementById('btnLogout').addEventListener('click', function(){
 });
 document.getElementById('btnReset').addEventListener('click', function(){
   if(confirm('이 사이트에 저장된 실습 데이터를 모두 지웁니다.\n작성한 기안과 결재 이력이 사라집니다. 계속할까요?')){
-    Store.clear(); location.hash = '#/home'; show('loginView'); toast('초기화했습니다.');
+    Store.clear(); USER = null; state.draftPreview = null;
+    location.hash = '#/home'; show('loginView'); toast('초기화했습니다.');
   }
 });
 function enterApp(){
+  USER = sessionUser();
+  if(!USER){ Store.set('session', null); show('loginView'); return; }
   document.getElementById('whoami').textContent = USER.name + ' ' + USER.rank + ' · ' + USER.dept;
   show('appView');
   if(!location.hash || location.hash.indexOf('#/') !== 0) location.hash = '#/home';
@@ -465,7 +487,11 @@ function enterApp(){
 var state = { hrTab:'att', attPage:1, payPage:1, draftPreview:null };
 
 function route(){
-  if(!Store.get('session', null)){ show('loginView'); return; }
+  var user = sessionUser();
+  if(!user){ USER = null; state.draftPreview = null; show('loginView'); return; }
+  if(USER && USER.id !== user.id) state.draftPreview = null;
+  USER = user;
+  document.getElementById('whoami').textContent = USER.name + ' ' + USER.rank + ' · ' + USER.dept;
   show('appView');
   var h = (location.hash || '#/home').replace('#/','');
   var parts = h.split('/');
@@ -485,6 +511,9 @@ function route(){
   window.scrollTo(0,0);
 }
 window.addEventListener('hashchange', route);
+window.addEventListener('storage', function(e){
+  if(e.key === Store.key('session') || e.key === null){ MEM = {}; route(); }
+});
 
 /* ---------- 홈 ---------- */
 function viewHome(){
@@ -604,14 +633,15 @@ function tablePay(){
 }
 
 /* ---------- 전자결재 ---------- */
+function boxKey(){ return USER.id === 'hong' ? 'box' : 'box:' + USER.id; }
 function getBox(){
-  var saved = Store.get('box', null);
+  var saved = Store.get(boxKey(), null);
   if(saved) return saved;
-  var seeded = BOX_SEED.map(function(b){
+  var seeded = (USER.id === 'hong' ? BOX_SEED : []).map(function(b){
     return { id:b.id, title:b.title, type:b.type, drafter:b.drafter, line:b.line,
              state:b.state, date: ymd(addDays(NOW, b.dayOffset)), body:'(기존 문서)' };
   });
-  Store.set('box', seeded);
+  Store.set(boxKey(), seeded);
   return seeded;
 }
 function nextDocId(){
@@ -719,7 +749,7 @@ function bindPage(top){
       var d = state.draftPreview, box = getBox();
       box.unshift({ id: nextDocId(), title:d.title, type:d.type, drafter: USER.name + ' ' + USER.rank,
                     line:d.line, state:'진행중', date: ymd(NOW), body:d.body });
-      Store.set('box', box);
+      Store.set(boxKey(), box);
       state.draftPreview = null;
       location.hash = '#/box';
       toast('상신했습니다. 결재함에서 확인할 수 있습니다.');
