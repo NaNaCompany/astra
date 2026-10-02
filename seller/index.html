@@ -107,6 +107,20 @@
   .inq-a{background:#f5f9f8;border-left:3px solid var(--brand);padding:10px 13px;border-radius:0 4px 4px 0;font-size:13.5px;line-height:1.7}
   .inq-a .who{color:var(--brand-d);font-weight:600;font-size:12.5px;display:block;margin-bottom:3px}
 
+  .live-banner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;padding:13px 16px;border:1px solid #bbddd3;border-radius:6px;background:#eff9f5;color:var(--brand-d);font-size:13px}
+  .live-dot{width:8px;height:8px;border-radius:50%;background:#17996c;box-shadow:0 0 0 4px #d7f0e6;flex:none}
+  .live-next{margin-left:auto;color:var(--ink2)}
+  .live-next strong{display:inline-block;min-width:34px;color:var(--brand-d);font-variant-numeric:tabular-nums}
+  .stock-event{display:flex;align-items:center;gap:15px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--line2);font-size:13px}
+  .stock-event:last-child{border-bottom:none}
+  .stock-event time{color:var(--ink3);font-variant-numeric:tabular-nums}
+  .stock-event strong{margin-left:auto;color:var(--danger);font-variant-numeric:tabular-nums}
+  .stock-wait{margin:0;color:var(--ink3);font-size:13px}
+  .stock-changed td{animation:stock-change 3s ease-out}
+  .stock-changed td:nth-child(4){color:var(--danger);font-weight:700}
+  @keyframes stock-change{from{background:#ffedc9}to{background:transparent}}
+  @media(prefers-reduced-motion:reduce){.stock-changed td{animation:none;background:#fff4df}}
+
   .form-row{display:flex;gap:14px;margin-bottom:13px;align-items:flex-start}
   .form-row label{flex:0 0 100px;padding-top:9px;font-size:13.5px;color:var(--ink2)}
   .form-row .fc{flex:1}
@@ -200,7 +214,7 @@
 <script>
 /* =========================================================================
    나나샵 셀러 관리자 — 실습용 정적 웹앱
-   데이터는 전부 고정. 날짜·시각만 실제 현재 값을 씁니다.
+   가상 문의·주문을 일정 간격으로 생성하며 브라우저에 실습 상태를 저장합니다.
    "새 문의"는 미리 정해진 큐에서 순서대로 꺼내 옵니다.
    ========================================================================= */
 
@@ -378,16 +392,19 @@ document.getElementById('loginForm').addEventListener('submit', function(e){
   else document.getElementById('loginErr').textContent='아이디 또는 비밀번호가 올바르지 않습니다.';
 });
 document.getElementById('btnLogout').addEventListener('click', function(){
+  SellerLive.stop();
   Store.set('session',null);
   document.getElementById('loginId').value=''; document.getElementById('loginPw').value='';
   document.getElementById('loginErr').textContent=''; show('loginView');
 });
 document.getElementById('btnReset').addEventListener('click', function(){
   if(confirm('이 사이트에 저장된 실습 데이터를 모두 지웁니다.\n답변·답글·발주 이력이 사라집니다. 계속할까요?')){
-    Store.clear(); location.hash='#/orders'; show('loginView'); toast('초기화했습니다.');
+    SellerLive.reset(); Store.clear();
+    st={ordPage:1,ordFilter:'all',ordDate:'all',poPreview:null};
+    location.hash='#/orders'; show('loginView'); toast('초기화했습니다.');
   }
 });
-function enterApp(){ show('appView');
+function enterApp(){ show('appView'); SellerLive.sync(); SellerLive.start();
   if(!location.hash || location.hash.indexOf('#/')!==0) location.hash='#/orders';
   route(); }
 
@@ -404,7 +421,8 @@ function updateBadges(){
   document.getElementById('badgeRv').innerHTML    = noReply ? '<span class="badge">'+noReply+'</span>' : '';
 }
 function route(){
-  if(!Store.get('session',null)){ show('loginView'); return; }
+  if(!Store.get('session',null)){ SellerLive.stop(); show('loginView'); return; }
+  SellerLive.sync();
   show('appView');
   var h=(location.hash||'#/orders').replace('#/',''), top=h.split('/')[0]||'orders';
   document.querySelectorAll('#sideNav a').forEach(function(a){
@@ -418,14 +436,14 @@ function route(){
   else if(top==='reviews') m.innerHTML=viewReviews();
   else if(top==='sent') m.innerHTML=viewSent();
   else m.innerHTML='<div class="card"><div class="empty">페이지를 찾을 수 없습니다.</div></div>';
-  bind(top); updateBadges(); window.scrollTo(0,0);
+  bind(top); updateBadges(); SellerLive.updateClock(); window.scrollTo(0,0);
 }
 window.addEventListener('hashchange', route);
 
 /* ---------- 주문 ---------- */
 var PER = 10;
 function viewOrders(){
-  var today = ymd(NOW);
+  var today = ymd(new Date());
   var todays = ORDERS.filter(function(o){ return o.day===today; });
   var todaySales = todays.filter(function(o){ return o.state!=='취소'; })
                          .reduce(function(a,o){ return a+o.amount; },0);
@@ -438,7 +456,8 @@ function viewOrders(){
   if(st.ordPage>pages) st.ordPage=pages;
   var page = rows.slice((st.ordPage-1)*PER, st.ordPage*PER);
 
-  var h='<div class="page-head"><div><h1>주문 관리</h1><p>'+ymdhm(NOW)+' 기준</p></div></div>';
+  var h='<div class="page-head"><div><h1>주문 관리</h1><p>'+ymdhm(new Date())+' 기준</p></div></div>';
+  h+=liveBanner('orders');
   h+='<div class="summary">';
   h+='<div class="stat"><div class="l">오늘 주문</div><div class="v">'+todays.length+'<small>건</small></div></div>';
   h+='<div class="stat"><div class="l">오늘 매출 (취소 제외)</div><div class="v" style="font-size:20px">'+won(todaySales)+'<small>원</small></div></div>';
@@ -483,10 +502,19 @@ function viewStock(){
   var low=lowStock();
   var h='<div class="page-head"><div><h1>재고 현황</h1><p>안전재고 미만 '+low.length+'개 품목</p></div>'+
         (low.length?'<a href="#/po" class="btn btn-primary">부족 품목 발주하기</a>':'')+'</div>';
+  h+=liveBanner('orders');
+  var events=SellerLive.getState().events;
+  h+='<div class="card stock-events"><h2>최근 주문 · 재고 변동</h2><div id="stockEvents" aria-live="polite">';
+  if(!events.length)h+='<p class="stock-wait">새 주문이 들어오면 재고 변동이 여기에 표시됩니다.</p>';
+  events.slice(0,4).forEach(function(e){
+    h+='<div class="stock-event"><time>'+pad(new Date(e.at).getHours())+':'+pad(new Date(e.at).getMinutes())+':'+pad(new Date(e.at).getSeconds())+'</time><span>'+esc(e.name)+' <b>'+e.qty+'개 판매</b></span><strong>'+e.before+' → '+e.after+'개</strong></div>';
+  });
+  h+='</div></div>';
   h+='<div class="card"><table id="stockTable"><thead><tr><th>상품코드</th><th>상품명</th><th>판매가</th><th>현재고</th><th>안전재고</th><th>부족수량</th><th>거래처</th><th>상태</th></tr></thead><tbody>';
   PRODUCTS.forEach(function(p){
     var isLow=p.stock<p.safe, v=null; VENDORS.forEach(function(x){ if(x.id===p.vendor) v=x; });
-    h+='<tr class="'+(isLow?'low':'')+'"><td>'+p.sku+'</td><td>'+esc(p.name)+'</td>'+
+    var recent=events.find(function(e){return e.sku===p.sku && Date.now()-e.at<15000;});
+    h+='<tr data-sku="'+p.sku+'" class="'+(isLow?'low ':'')+(recent?'stock-changed':'')+'"><td>'+p.sku+'</td><td>'+esc(p.name)+'</td>'+
        '<td class="num">'+won(p.price)+'</td><td class="num">'+p.stock+'</td><td class="num">'+p.safe+'</td>'+
        '<td class="num">'+(isLow?(p.safe-p.stock):'—')+'</td><td>'+esc(v.name)+'</td>'+
        '<td>'+(p.stock===0?'<span class="tag tag-new">품절</span>':(isLow?'<span class="tag tag-warn">부족</span>':'<span class="tag tag-ok">정상</span>'))+'</td></tr>';
@@ -564,27 +592,72 @@ function buildPoMails(){
 }
 
 /* ---------- 고객 문의 ---------- */
-function viewInq(){
+function liveBanner(kind){
+  var inquiry=kind==='inquiries';
+  return '<div class="live-banner"><span class="live-dot" aria-hidden="true"></span><b>'+(inquiry?'실시간 문의 수신 중':'실시간 주문 접수 중')+'</b><span>'+(inquiry?'약 1분마다 새 문의 도착':'약 15초마다 새 주문 · 재고 자동 반영')+'</span><span class="live-next">다음 '+(inquiry?'문의':'주문')+'까지 <strong id="'+(inquiry?'liveInquiryCountdown':'liveOrderCountdown')+'">—</strong></span></div>';
+}
+function sortedInquiries(){
   var list=getInq();
-  var un=list.filter(function(i){return i.state==='미답변';}).length;
-  var h='<div class="page-head"><div><h1>고객 문의</h1><p>전체 '+list.length+'건 · 미답변 '+un+'건</p></div>'+
-        '<button class="btn" id="btnNewInq">새 문의 1건 받기</button></div><div class="card">';
-  if(!list.length) return h+'<div class="empty">문의가 없습니다.</div></div>';
-  list.forEach(function(q){
-    h+='<div class="inq" data-inq="'+q.id+'">';
-    h+='<div class="inq-top"><span class="tag tag-info">'+esc(q.type)+'</span>'+
-       '<b>'+esc(q.cust)+'</b><span style="color:var(--ink3);font-size:12.5px">'+q.at+'</span>'+
-       (q.state==='미답변'?'<span class="tag tag-new">미답변</span>':'<span class="tag tag-ok">답변완료</span>')+'</div>';
-    h+='<p class="inq-q">'+esc(q.q)+'</p>';
-    if(q.answer){
-      h+='<div class="inq-a"><span class="who">나나샵 답변</span>'+esc(q.answer)+'</div>';
-    }else{
-      h+='<div class="rv-actions"><textarea data-ans="'+q.id+'" placeholder="답변을 입력하세요"></textarea>'+
-         '<button class="btn btn-primary btn-sm" data-send-ans="'+q.id+'">답변 발송</button></div>';
-    }
-    h+='</div>';
-  });
+  return list.filter(function(q){return q.state!=='답변완료';}).concat(list.filter(function(q){return q.state==='답변완료';}));
+}
+function inquiryCard(q){
+  var h='<div class="inq" data-inq="'+q.id+'" data-state="'+q.state+'">';
+  h+='<div class="inq-top"><span class="tag tag-info">'+esc(q.type)+'</span>'+
+     '<b>'+esc(q.cust)+'</b><span style="color:var(--ink3);font-size:12.5px">'+q.at+'</span>'+
+     (q.state==='미답변'?'<span class="tag tag-new">미답변</span>':'<span class="tag tag-ok">답변완료</span>')+'</div>';
+  h+='<p class="inq-q">'+esc(q.q)+'</p>';
+  if(q.answer)h+='<div class="inq-a"><span class="who">나나샵 답변</span>'+esc(q.answer)+'</div>';
+  else h+='<div class="rv-actions"><textarea data-ans="'+q.id+'" placeholder="답변을 입력하세요"></textarea><button class="btn btn-primary btn-sm" data-send-ans="'+q.id+'">답변 발송</button></div>';
   return h+'</div>';
+}
+function refreshInquiries(newId){
+  var container=document.getElementById('inqList');
+  if(!container)return;
+  var list=sortedInquiries();
+  // Remove completed cards first, so other open reply fields never move or lose focus.
+  container.querySelectorAll('[data-inq]').forEach(function(node){
+    var q=list.find(function(item){return item.id===+node.getAttribute('data-inq');});
+    if(!q || node.getAttribute('data-state')!==q.state)node.remove();
+  });
+  var cursor=container.firstElementChild;
+  list.forEach(function(q){
+    var node=container.querySelector('[data-inq="'+q.id+'"]');
+    if(!node){var holder=document.createElement('div');holder.innerHTML=inquiryCard(q);node=holder.firstElementChild;}
+    // Keep existing textareas and caret intact while inserting new cards above them.
+    if(node!==cursor)container.insertBefore(node,cursor);
+    cursor=node.nextElementSibling;
+    if(q.id===newId){node.classList.add('hl');setTimeout(function(){node.classList.remove('hl');},1800);}
+  });
+  document.getElementById('inqCounts').textContent='전체 '+list.length+'건 · 미답변 '+list.filter(function(q){return q.state==='미답변';}).length+'건';
+}
+function refreshTradingView(){
+  var top=(location.hash||'#/orders').replace('#/','').split('/')[0];
+  if(top!=='stock' && top!=='orders')return;
+  var x=window.scrollX,y=window.scrollY,focused=document.activeElement && document.activeElement.id;
+  if(top==='orders'){
+    // Keep the filter controls themselves intact, even while their dropdown is open.
+    var holder=document.createElement('div');holder.innerHTML=viewOrders();
+    ['.summary','#orderTable','.pager'].forEach(function(selector){
+      var current=document.querySelector('#main '+selector),next=holder.querySelector(selector);
+      if(current && next)current.replaceWith(next);
+    });
+    ['.page-head p','.filters span'].forEach(function(selector){
+      var current=document.querySelector('#main '+selector),next=holder.querySelector(selector);
+      if(current && next)current.textContent=next.textContent;
+    });
+    bindOrderPaging();
+  }else{
+    document.getElementById('main').innerHTML=viewStock();bind(top);
+  }
+  SellerLive.updateClock();window.scrollTo(x,y);
+  if(focused){var el=document.getElementById(focused);if(el)el.focus({preventScroll:true});}
+}
+function viewInq(){
+  var list=sortedInquiries();
+  var un=list.filter(function(i){return i.state==='미답변';}).length;
+  var h='<div class="page-head"><div><h1>고객 문의</h1><p id="inqCounts">전체 '+list.length+'건 · 미답변 '+un+'건</p></div>'+
+        '<button class="btn" id="btnNewInq">새 문의 1건 받기</button></div>'+liveBanner('inquiries')+'<div class="card" id="inqList">';
+  return h+list.map(inquiryCard).join('')+'</div>';
 }
 
 /* ---------- 리뷰 ---------- */
@@ -631,9 +704,12 @@ function viewSent(){
 }
 
 /* ---------- 이벤트 ---------- */
-function bind(top){
+function bindOrderPaging(){
   document.querySelectorAll('.pager button[data-pg]').forEach(function(b){
     b.addEventListener('click',function(){ st.ordPage=+b.getAttribute('data-pg'); route(); }); });
+}
+function bind(top){
+  bindOrderPaging();
   var fd=document.getElementById('fDate'); if(fd) fd.addEventListener('change',function(){ st.ordDate=fd.value; st.ordPage=1; route(); });
   var fs=document.getElementById('fState'); if(fs) fs.addEventListener('change',function(){ st.ordFilter=fs.value; st.ordPage=1; route(); });
 
@@ -653,31 +729,6 @@ function bind(top){
     location.hash='#/sent'; toast(n+'개 거래처로 발주 메일을 보냈습니다.');
   });
 
-  var bn=document.getElementById('btnNewInq');
-  if(bn) bn.addEventListener('click',function(){
-    var list=getInq(), cur=Store.get('inqCursor',0);
-    var src=INQ_QUEUE[cur % INQ_QUEUE.length];
-    var maxId=0; list.forEach(function(x){ if(x.id>maxId) maxId=x.id; });
-    list.unshift({ id:maxId+1, type:src.t, cust:src.c, q:src.q, at: ymdhm(new Date()), state:'미답변', answer:null });
-    Store.set('inq', list); Store.set('inqCursor', cur+1);
-    route();
-    var el=document.querySelector('[data-inq="'+(maxId+1)+'"]');
-    if(el){ el.classList.add('hl'); setTimeout(function(){ el.classList.remove('hl'); }, 1800); }
-    toast('새 문의가 1건 도착했습니다.');
-  });
-  document.querySelectorAll('[data-send-ans]').forEach(function(b){
-    b.addEventListener('click',function(){
-      var id=+b.getAttribute('data-send-ans');
-      var ta=document.querySelector('[data-ans="'+id+'"]');
-      var txt=(ta.value||'').trim();
-      if(!txt){ toast('답변 내용을 입력해 주세요.'); return; }
-      var list=getInq(), target=null;
-      list.forEach(function(x){ if(x.id===id){ x.answer=txt; x.state='답변완료'; target=x; } });
-      Store.set('inq', list);
-      pushSent({ at: ymdhm(new Date()), kind:'문의 답변', to: target.cust+' 고객님', summary: txt });
-      route(); toast('답변을 발송했습니다.');
-    });
-  });
   document.querySelectorAll('[data-send-rv]').forEach(function(b){
     b.addEventListener('click',function(){
       var id=+b.getAttribute('data-send-rv');
@@ -692,7 +743,16 @@ function bind(top){
   });
 }
 
-(function init(){ if(Store.get('session',null)) enterApp(); else show('loginView'); })();
+document.getElementById('main').addEventListener('click',function(event){
+  if(event.target.closest('#btnNewInq')){SellerLive.newInquiry();return;}
+  var button=event.target.closest('[data-send-ans]');if(!button)return;
+  var id=+button.getAttribute('data-send-ans'),ta=document.querySelector('[data-ans="'+id+'"]');
+  var text=(ta.value||'').trim();
+  if(!text){toast('답변 내용을 입력해 주세요.');return;}
+  SellerLive.reply(id,text);
+});
 </script>
+<script src="./live.js"></script>
+<script>(function init(){ if(Store.get('session',null)) enterApp(); else show('loginView'); })();</script>
 </body>
 </html>
