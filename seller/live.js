@@ -8,17 +8,19 @@ var SellerLive = (function(){
   function getState(){
     var data = Store.get('live', null);
     if(!data) return {
-      version:2,
+      version:3,
       stocks:Object.assign({}, initialStocks), seedOrders:initialOrders.slice(),
       orders:[], events:[], sequence:0, nextInquiryAt:0, nextOrderAt:0
     };
-    // Keep saved replies/orders and consumption; grant the larger opening stock once.
-    if((data.version || 1)<2){
+    // Rebase opening stock once while preserving saved orders and stock already consumed.
+    if((data.version || 1)<3){
+      var stockAdjustment=(data.version || 1)<2?1500:-2500;
+      data.stocks=data.stocks || {};
       PRODUCTS.forEach(function(p){
         var previous=data.stocks[p.sku];
-        data.stocks[p.sku]=Number.isFinite(previous)?previous+4000:initialStocks[p.sku];
+        data.stocks[p.sku]=Number.isFinite(previous)?Math.max(0,previous+stockAdjustment):initialStocks[p.sku];
       });
-      data.version=2;
+      data.version=3;
       data.nextInquiryAt=Date.now()+inquiryMs;
       data.nextOrderAt=Date.now()+orderMs;
       Store.set('live',data);

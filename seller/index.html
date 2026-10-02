@@ -243,18 +243,18 @@ var NOW = new Date();
 
 /* ---------- 상품 ---------- */
 var PRODUCTS = [
-  { sku:'NS-1001', name:'우드 데스크 오거나이저',      price:29800, stock:4042, safe:1000, vendor:'V-01' },
-  { sku:'NS-1002', name:'접이식 노트북 스탠드',        price:24500, stock:4008, safe:1000, vendor:'V-01' },
-  { sku:'NS-1003', name:'무선 충전 마우스패드',        price:38900, stock:4061, safe:1000, vendor:'V-02' },
-  { sku:'NS-1004', name:'황동 북엔드 2개 세트',        price:19800, stock:4003, safe:1000, vendor:'V-03' },
-  { sku:'NS-1005', name:'린넨 파우치 M',               price:12900, stock:4120, safe:1000, vendor:'V-04' },
-  { sku:'NS-1006', name:'스테인리스 텀블러 470ml',     price:26500, stock:4017, safe:1000, vendor:'V-02' },
-  { sku:'NS-1007', name:'가죽 마우스패드 라지',        price:34000, stock:4055, safe:1000, vendor:'V-03' },
-  { sku:'NS-1008', name:'모니터 받침대 화이트',        price:45900, stock:4012, safe:1000, vendor:'V-01' },
-  { sku:'NS-1009', name:'케이블 정리 클립 12P',        price:8900,  stock:4230, safe:1000, vendor:'V-04' },
-  { sku:'NS-1010', name:'우드 폰 스탠드',              price:15900, stock:4006, safe:1000, vendor:'V-03' },
-  { sku:'NS-1011', name:'데스크 매트 L 그레이',        price:52000, stock:4033, safe:1000, vendor:'V-02' },
-  { sku:'NS-1012', name:'미니 가습기 250ml',           price:31900, stock:4000, safe:1000, vendor:'V-04' }
+  { sku:'NS-1001', name:'우드 데스크 오거나이저',      price:29800, stock:1542, safe:1000, vendor:'V-01' },
+  { sku:'NS-1002', name:'접이식 노트북 스탠드',        price:24500, stock:1508, safe:1000, vendor:'V-01' },
+  { sku:'NS-1003', name:'무선 충전 마우스패드',        price:38900, stock:1561, safe:1000, vendor:'V-02' },
+  { sku:'NS-1004', name:'황동 북엔드 2개 세트',        price:19800, stock:1503, safe:1000, vendor:'V-03' },
+  { sku:'NS-1005', name:'린넨 파우치 M',               price:12900, stock:1620, safe:1000, vendor:'V-04' },
+  { sku:'NS-1006', name:'스테인리스 텀블러 470ml',     price:26500, stock:1517, safe:1000, vendor:'V-02' },
+  { sku:'NS-1007', name:'가죽 마우스패드 라지',        price:34000, stock:1555, safe:1000, vendor:'V-03' },
+  { sku:'NS-1008', name:'모니터 받침대 화이트',        price:45900, stock:1512, safe:1000, vendor:'V-01' },
+  { sku:'NS-1009', name:'케이블 정리 클립 12P',        price:8900,  stock:1730, safe:1000, vendor:'V-04' },
+  { sku:'NS-1010', name:'우드 폰 스탠드',              price:15900, stock:1506, safe:1000, vendor:'V-03' },
+  { sku:'NS-1011', name:'데스크 매트 L 그레이',        price:52000, stock:1533, safe:1000, vendor:'V-02' },
+  { sku:'NS-1012', name:'미니 가습기 250ml',           price:31900, stock:1500, safe:1000, vendor:'V-04' }
 ];
 var VENDORS = [
   { id:'V-01', name:'대성목재산업',   manager:'김대성', email:'order@daesung-wood.co.kr',  tel:'031-555-0182', term:'발주 후 5영업일' },
@@ -732,7 +732,7 @@ document.getElementById('main').addEventListener('click',function(event){
   SellerLive.reply(id,text);
 });
 </script>
-<script src="./live.js?v=3"></script>
+<script src="./live.js?v=4"></script>
 <script>(function init(){ if(Store.get('session',null)) enterApp(); else show('loginView'); })();</script>
 </body>
 </html>
