@@ -101,6 +101,35 @@
   .tabs button{padding:10px 18px;border:none;background:none;color:var(--ink2);font-size:14px;border-bottom:2px solid transparent;margin-bottom:-1px}
   .tabs button.on{color:var(--brand-d);border-bottom-color:var(--brand);font-weight:700}
 
+  .payroll-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;border-bottom:1px solid var(--line2);padding-bottom:12px}
+  .payroll-heading h2{margin:0;padding:0;border:none;font-size:17px}
+  .payroll-heading p{margin:0;color:var(--ink3);font-size:12.5px}
+  .payroll-months{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:7px;margin-bottom:18px}
+  .payroll-months button{padding:9px 4px;background:#fff;border:1px solid var(--line);border-radius:5px;color:var(--ink2);font-weight:600}
+  .payroll-months button small{display:block;font-size:11px;font-weight:400;margin-top:2px}
+  .payroll-months button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+  .payroll-months button:focus-visible,.payroll-scroll:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+  .payroll-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:22px}
+  .payroll-summary .stat{background:#f8faff;padding:13px 15px}
+  .payroll-summary .v{font-size:21px;font-variant-numeric:tabular-nums}
+  .payroll-detail-heading{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:12px}
+  .payroll-detail-heading h3{margin:0;font-size:15px}
+  .payroll-detail-heading span{color:var(--ink3);font-size:12px}
+  .payroll-scroll{overflow-x:auto}
+  .hr-payroll-table{min-width:1360px}
+  .hr-payroll-table th,.hr-payroll-table td{white-space:nowrap;padding:9px 10px}
+  .hr-payroll-table .num{text-align:right;font-variant-numeric:tabular-nums}
+  .hr-payroll-table tfoot th,.hr-payroll-table tfoot td{background:#eef4fd;border-top:2px solid #cfdbec;font-weight:700}
+  .payroll-caption{text-align:left;color:var(--ink3);font-size:12px;margin-bottom:8px}
+  @media (max-width:1100px){
+    .payroll-months{grid-template-columns:repeat(6,minmax(0,1fr))}
+    .payroll-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media (max-width:520px){
+    .payroll-months{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .payroll-summary{grid-template-columns:1fr}
+  }
+
   .list-row{display:flex;gap:14px;padding:13px 4px;border-bottom:1px solid var(--line2);align-items:baseline}
   .list-row:last-child{border-bottom:none}
   .list-row .t{flex:1;min-width:0}
@@ -255,6 +284,7 @@
   <p class="nana-copyright">Copyright (c) <a href="https://bhban.kr">반병현</a> all right reserved.</p>
 </footer>
 
+<script src="./payroll-data.js"></script>
 <script>
 /* =========================================================================
    나나랩 업무 포털 — 실습용 정적 웹앱
@@ -434,7 +464,9 @@ function sessionUser(){
 }
 function startSession(user, via){
   state.draftPreview = null;
+  state.payPage = 1;
   Store.set('session', { userId:user.id, at:Date.now(), via:via });
+  if(user.id === 'min') location.hash = '#/hr/pay/1';
   enterApp();
 }
 document.getElementById('loginForm').addEventListener('submit', function(e){
@@ -484,7 +516,7 @@ function enterApp(){
 }
 
 /* ---------- 라우팅 ---------- */
-var state = { hrTab:'att', attPage:1, payPage:1, draftPreview:null };
+var state = { hrTab:'att', attPage:1, payPage:1, hrPayMonth:1, draftPreview:null };
 
 function route(){
   var user = sessionUser();
@@ -503,7 +535,14 @@ function route(){
   if(top === 'home') m.innerHTML = viewHome();
   else if(top === 'notice') m.innerHTML = parts[1] ? viewNoticeDetail(+parts[1]) : viewNotice();
   else if(top === 'docs') m.innerHTML = viewDocs();
-  else if(top === 'hr') m.innerHTML = viewHr();
+  else if(top === 'hr'){
+    if(parts[1] === 'att' || parts[1] === 'pay') state.hrTab = parts[1];
+    if(USER.id === 'min' && parts[1] === 'pay'){
+      var month = Number(parts[2]);
+      state.hrPayMonth = Number.isInteger(month) && month >= 1 && month <= 12 ? month : 1;
+    }
+    m.innerHTML = viewHr();
+  }
   else if(top === 'draft') m.innerHTML = viewDraft();
   else if(top === 'box') m.innerHTML = parts[1] ? viewBoxDetail(parts[1]) : viewBox();
   else m.innerHTML = '<div class="card"><div class="empty">페이지를 찾을 수 없습니다.</div></div>';
@@ -618,6 +657,7 @@ function tableAtt(){
   return h;
 }
 function tablePay(){
+  if(USER.id === 'min') return tableMonthlyPayroll();
   var start = (state.payPage-1) * PER_PAGE;
   var rows = PAY.slice(start, start + PER_PAGE);
   var h = '<div class="card"><h2>급여 내역</h2>';
@@ -630,6 +670,44 @@ function tablePay(){
   });
   h += '</tbody></table>' + pager(state.payPage, PAY.length, 'pay') + '</div>';
   return h;
+}
+
+function tableMonthlyPayroll(){
+  var monthData = HR_PAYROLL.months[state.hrPayMonth - 1];
+  var rows = monthData.rows;
+  var amountKeys = ['base','ot','meal','bonus','gross','ded','net'];
+  var totals = {base:0,ot:0,meal:0,bonus:0,gross:0,ded:0,net:0};
+  rows.forEach(function(row){ amountKeys.forEach(function(key){ totals[key] += row[key]; }); });
+  var monthLabel = HR_PAYROLL.year + '년 ' + monthData.month + '월';
+  var h = '<div class="card" id="monthlyPayroll">';
+  h += '<div class="payroll-heading"><h2>월별 지급내역</h2><p>' + HR_PAYROLL.year + '년 · 직원 ' + HR_PAYROLL.employees.length + '명 · 금액 단위: 원</p></div>';
+  h += '<div class="payroll-months" role="group" aria-label="지급월 선택">';
+  HR_PAYROLL.months.forEach(function(month){
+    var selected = month.month === state.hrPayMonth;
+    h += '<button type="button" data-pay-month="' + month.month + '" aria-label="' + month.month + '월" aria-pressed="' + selected + '" class="' + (selected?'on':'') + '">' + month.month + '월<small>' + month.rows.length + '명</small></button>';
+  });
+  h += '</div><div class="payroll-summary">';
+  h += '<div class="stat"><div class="l">지급 대상</div><div class="v">' + rows.length + '<small>명</small></div></div>';
+  [['지급총액','gross'],['공제총액','ded'],['실지급액','net']].forEach(function(item){
+    h += '<div class="stat"><div class="l">' + item[0] + '</div><div class="v" data-total="' + item[1] + '">' + won(totals[item[1]]) + '<small>원</small></div></div>';
+  });
+  h += '</div><div class="payroll-detail-heading"><h3>' + monthLabel + ' 직원별 급여</h3><span>전체 ' + rows.length + '명</span></div>';
+  h += '<div class="payroll-scroll" role="region" aria-label="' + monthLabel + ' 직원별 급여 표" tabindex="0">';
+  h += '<table id="payTable" class="hr-payroll-table"><caption class="payroll-caption">' + monthLabel + ' · 가상 급여 데이터</caption><thead><tr>';
+  ['사번','성명','이메일','부서','직급'].forEach(function(label){ h += '<th scope="col">' + label + '</th>'; });
+  ['기본급','연장수당','식대','상여','지급총액','공제총액','실지급액'].forEach(function(label){ h += '<th scope="col" class="num">' + label + '</th>'; });
+  h += '</tr></thead><tbody>';
+  rows.forEach(function(row){
+    h += '<tr><td>' + esc(row.employeeId) + '</td><td>' + esc(row.name) + '</td><td>' + esc(row.email) + '</td><td>' + esc(row.dept) + '</td><td>' + esc(row.rank) + '</td>';
+    amountKeys.forEach(function(key){
+      var value = won(row[key]);
+      h += '<td class="num">' + (key === 'net' ? '<b>' + value + '</b>' : value) + '</td>';
+    });
+    h += '</tr>';
+  });
+  h += '</tbody><tfoot><tr><th scope="row" colspan="5">' + monthData.month + '월 합계 · ' + rows.length + '명</th>';
+  amountKeys.forEach(function(key){ h += '<td class="num">' + won(totals[key]) + '</td>'; });
+  return h + '</tr></tfoot></table></div></div>';
 }
 
 /* ---------- 전자결재 ---------- */
@@ -713,7 +791,15 @@ function viewBoxDetail(id){
 /* ---------- 페이지별 이벤트 ---------- */
 function bindPage(top){
   document.querySelectorAll('.tabs button[data-tab]').forEach(function(b){
-    b.addEventListener('click', function(){ state.hrTab = b.getAttribute('data-tab'); route(); });
+    b.addEventListener('click', function(){
+      state.hrTab = b.getAttribute('data-tab');
+      var hash = '#/hr/' + state.hrTab;
+      if(state.hrTab === 'pay' && USER.id === 'min') hash += '/' + state.hrPayMonth;
+      if(location.hash === hash) route(); else location.hash = hash;
+    });
+  });
+  document.querySelectorAll('[data-pay-month]').forEach(function(b){
+    b.addEventListener('click', function(){ location.hash = '#/hr/pay/' + b.getAttribute('data-pay-month'); });
   });
   document.querySelectorAll('.pager button[data-pg]').forEach(function(b){
     b.addEventListener('click', function(){
