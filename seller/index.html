@@ -243,18 +243,18 @@ var NOW = new Date();
 
 /* ---------- 상품 ---------- */
 var PRODUCTS = [
-  { sku:'NS-1001', name:'우드 데스크 오거나이저',      price:29800, stock:4042, safe:20, vendor:'V-01' },
-  { sku:'NS-1002', name:'접이식 노트북 스탠드',        price:24500, stock:4008, safe:25, vendor:'V-01' },
-  { sku:'NS-1003', name:'무선 충전 마우스패드',        price:38900, stock:4061, safe:30, vendor:'V-02' },
-  { sku:'NS-1004', name:'황동 북엔드 2개 세트',        price:19800, stock:4003, safe:15, vendor:'V-03' },
-  { sku:'NS-1005', name:'린넨 파우치 M',               price:12900, stock:4120, safe:40, vendor:'V-04' },
-  { sku:'NS-1006', name:'스테인리스 텀블러 470ml',     price:26500, stock:4017, safe:35, vendor:'V-02' },
-  { sku:'NS-1007', name:'가죽 마우스패드 라지',        price:34000, stock:4055, safe:25, vendor:'V-03' },
-  { sku:'NS-1008', name:'모니터 받침대 화이트',        price:45900, stock:4012, safe:20, vendor:'V-01' },
-  { sku:'NS-1009', name:'케이블 정리 클립 12P',        price:8900,  stock:4230, safe:60, vendor:'V-04' },
-  { sku:'NS-1010', name:'우드 폰 스탠드',              price:15900, stock:4006, safe:20, vendor:'V-03' },
-  { sku:'NS-1011', name:'데스크 매트 L 그레이',        price:52000, stock:4033, safe:15, vendor:'V-02' },
-  { sku:'NS-1012', name:'미니 가습기 250ml',           price:31900, stock:4000, safe:18, vendor:'V-04' }
+  { sku:'NS-1001', name:'우드 데스크 오거나이저',      price:29800, stock:4042, safe:1000, vendor:'V-01' },
+  { sku:'NS-1002', name:'접이식 노트북 스탠드',        price:24500, stock:4008, safe:1000, vendor:'V-01' },
+  { sku:'NS-1003', name:'무선 충전 마우스패드',        price:38900, stock:4061, safe:1000, vendor:'V-02' },
+  { sku:'NS-1004', name:'황동 북엔드 2개 세트',        price:19800, stock:4003, safe:1000, vendor:'V-03' },
+  { sku:'NS-1005', name:'린넨 파우치 M',               price:12900, stock:4120, safe:1000, vendor:'V-04' },
+  { sku:'NS-1006', name:'스테인리스 텀블러 470ml',     price:26500, stock:4017, safe:1000, vendor:'V-02' },
+  { sku:'NS-1007', name:'가죽 마우스패드 라지',        price:34000, stock:4055, safe:1000, vendor:'V-03' },
+  { sku:'NS-1008', name:'모니터 받침대 화이트',        price:45900, stock:4012, safe:1000, vendor:'V-01' },
+  { sku:'NS-1009', name:'케이블 정리 클립 12P',        price:8900,  stock:4230, safe:1000, vendor:'V-04' },
+  { sku:'NS-1010', name:'우드 폰 스탠드',              price:15900, stock:4006, safe:1000, vendor:'V-03' },
+  { sku:'NS-1011', name:'데스크 매트 L 그레이',        price:52000, stock:4033, safe:1000, vendor:'V-02' },
+  { sku:'NS-1012', name:'미니 가습기 250ml',           price:31900, stock:4000, safe:1000, vendor:'V-04' }
 ];
 var VENDORS = [
   { id:'V-01', name:'대성목재산업',   manager:'김대성', email:'order@daesung-wood.co.kr',  tel:'031-555-0182', term:'발주 후 5영업일' },
@@ -573,7 +573,7 @@ function buildPoMails(){
 /* ---------- 고객 문의 ---------- */
 function liveBanner(kind){
   var inquiry=kind==='inquiries';
-  return '<div class="live-banner"><span class="live-dot" aria-hidden="true"></span><b>'+(inquiry?'실시간 문의 수신 중':'실시간 주문 접수 중')+'</b><span>'+(inquiry?'약 15초마다 새 문의 도착':'약 3초마다 새 주문 · 재고 자동 반영')+'</span><span class="live-next">다음 '+(inquiry?'문의':'주문')+'까지 <strong id="'+(inquiry?'liveInquiryCountdown':'liveOrderCountdown')+'">—</strong></span></div>';
+  return '<div class="live-banner"><span class="live-dot" aria-hidden="true"></span><b>'+(inquiry?'실시간 문의 수신 중':'실시간 주문 접수 중')+'</b><span>'+(inquiry?'약 15초마다 새 문의 도착':'초당 3건 주문 · 재고 자동 반영')+'</span><span class="live-next">다음 '+(inquiry?'문의':'주문')+'까지 <strong id="'+(inquiry?'liveInquiryCountdown':'liveOrderCountdown')+'">—</strong></span></div>';
 }
 function sortedInquiries(){
   var list=getInq();
@@ -732,7 +732,7 @@ document.getElementById('main').addEventListener('click',function(event){
   SellerLive.reply(id,text);
 });
 </script>
-<script src="./live.js?v=2"></script>
+<script src="./live.js?v=3"></script>
 <script>(function init(){ if(Store.get('session',null)) enterApp(); else show('loginView'); })();</script>
 </body>
 </html>

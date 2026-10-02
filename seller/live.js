@@ -1,6 +1,6 @@
 /* Local practice events only: no external orders, messages, or mail are sent. */
 var SellerLive = (function(){
-  var inquiryMs = 15000, orderMs = 3000, timer = null, busy = false;
+  var inquiryMs = 15000, orderMs = 1000, ordersPerTick = 3, timer = null, busy = false;
   var initialStocks = {};
   PRODUCTS.forEach(function(p){ initialStocks[p.sku] = p.stock; });
   var initialOrders = ORDERS.slice();
@@ -71,7 +71,16 @@ var SellerLive = (function(){
       if(document.hidden || !Store.get('session',null)) return;
       var data=getState(), now=Date.now(), inquiryId=null, order=null, changed=false;
       if(now>=data.nextInquiryAt){inquiryId=addInquiry(); data.nextInquiryAt=now+inquiryMs;changed=true;}
-      if(now>=data.nextOrderAt){order=addOrder(data,now); data.nextOrderAt=now+orderMs;changed=true;}
+      if(now>=data.nextOrderAt){
+        for(var i=0;i<ordersPerTick;i++){
+          var added=addOrder(data,now);
+          if(!added)break;
+          order=added;
+        }
+        // Stay on the one-second cadence without replaying missed batches.
+        data.nextOrderAt=now+orderMs-((now-data.nextOrderAt)%orderMs);
+        changed=true;
+      }
       if(changed){
         Store.set('live',data); sync(data);
       }
@@ -89,7 +98,7 @@ var SellerLive = (function(){
       var data=getState(), now=Date.now();
       // Resume from now; never replay a burst of events accumulated while away.
       if(!data.nextInquiryAt || data.nextInquiryAt<=now) data.nextInquiryAt=now+inquiryMs;
-      if(!data.nextOrderAt || data.nextOrderAt<=now) data.nextOrderAt=now+orderMs;
+      if(!data.nextOrderAt || data.nextOrderAt<=now || data.nextOrderAt>now+orderMs) data.nextOrderAt=now+orderMs;
       Store.set('live',data); sync(data); updateClock();
     });
     timer=setInterval(tick,250);
@@ -126,6 +135,6 @@ var SellerLive = (function(){
     if(event.key===Store.key('live')) refreshTradingView();
     updateBadges(); updateClock();
   });
-  return {inquiryMs:inquiryMs,orderMs:orderMs,getState:getState,sync:sync,start:start,stop:stop,
+  return {inquiryMs:inquiryMs,orderMs:orderMs,ordersPerTick:ordersPerTick,getState:getState,sync:sync,start:start,stop:stop,
     newInquiry:newInquiry,reply:reply,reset:reset,updateClock:updateClock};
 }());
