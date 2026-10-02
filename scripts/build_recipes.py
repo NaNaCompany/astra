@@ -27,7 +27,101 @@ def size_label(size):
     return f'{size / (1024 * 1024):.1f} MB' if size >= 1024 * 1024 else f'{max(1, round(size / 1024))} KB'
 
 
-def shell(title, body, *, detail=False, script=False, inline=False):
+MANUAL_LABELS = {
+    'dimensions': '크기', 'material': '소재', 'color': '색상',
+    'capacity': '용량·하중', 'compatibility': '호환성과 사용 대상',
+    'care': '세척·관리', 'package': '구성품', 'limits': '사용 범위와 주의사항',
+    'assembly': '조립·설치', 'charging': '충전 방법', 'thermal': '보온·보냉',
+    'removal': '제거 방법', 'runtime': '작동 시간', 'operation': '사용 방법',
+    'fictional': '정책 적용 범위', 'catalog': '판매 상품', 'prices': '표시 가격',
+    'tolerances': '치수·소재 차이', 'region': '배송 지역', 'fee': '비용',
+    'remoteFee': '제주·도서산간 추가비', 'dispatch': '출고 기준',
+    'transit': '배송 예상 기간', 'weekend': '주말·공휴일', 'tracking': '배송 조회',
+    'addressChange': '주소 변경', 'redelivery': '재배송', 'redeliveryFee': '재배송 비용',
+    'combine': '묶음배송', 'deliveryIssue': '미수령 문의', 'restrictions': '제공하지 않는 서비스',
+    'stock': '재고·입고 확인', 'beforeDispatch': '출고 전 취소',
+    'afterDispatch': '출고 후 취소', 'part': '일부 수량 취소',
+    'confirmation': '처리 단계 확인', 'editing': '주문 내용 변경',
+    'request': '접수 기준', 'available': '교환 가능 범위', 'sizeMtoL': '린넨 파우치 사이즈',
+    'colors': '색상 교환', 'partial': '세트 일부 교환', 'timing': '처리 기간',
+    'unavailable': '교환 재고가 없는 경우', 'window': '접수 기간·상품 상태',
+    'defect': '불량·오배송·파손', 'collection': '회수 절차', 'packaging': '포장 방법',
+    'boxDamage': '운송 상자 손상', 'hygiene': '위생·사용 상태',
+    'costsFull': '전체 반품 비용', 'costsPartial': '일부 반품 비용',
+    'remoteCosts': '제주·도서산간 반품 비용', 'inspection': '검수',
+    'exclusions': '반품 제한 검토', 'late': '기간이 지난 요청',
+    'start': '환불 처리 시작', 'card': '카드 결제', 'transfer': '계좌이체',
+    'simplePay': '간편결제', 'delay': '환불 지연', 'amount': '환불 금액',
+    'destination': '환불 수단', 'methods': '결제수단', 'price': '상품 가격·배송비',
+    'pending': '미확인 결제', 'duplicate': '중복 결제', 'failed': '결제 실패',
+    'receipts': '구매 증빙', 'bulk': '대량 주문 기준', 'quote': '견적 안내',
+    'taxInvoice': '세금계산서', 'evidence': '증빙 중복 여부',
+    'taxTiming': '증빙 발행 일정', 'custom': '맞춤 제작·포장',
+    'corporateDelivery': '여러 주소로 배송', 'samples': '샘플·후불 거래',
+    'hours': '상담 시간', 'channel': '문의 채널', 'response': '답변 예상 시간',
+    'email': '이메일 안내', 'required': '확인할 정보', 'urgent': '사용 안전 문의',
+    'defects': '초기 불량', 'ongoing': '장기간 사용 후 고장',
+    'certification': '인증·증명 자료', 'safeUse': '안전한 사용',
+    'staticFacts': '매뉴얼에서 바로 확인', 'liveFacts': '판매자 센터에서 확인',
+    'unknownFacts': '정보가 부족할 때', 'context': '상품·주문을 특정할 때',
+    'simulation': '실습 화면의 처리 범위', 'privacy': '개인정보 안내',
+}
+POLICY_LABELS = {
+    'scope': '기본 운영 기준', 'shipping': '배송·재고', 'cancellation': '주문 취소·변경',
+    'exchange': '교환', 'returns': '반품', 'refund': '환불', 'payment': '결제·증빙',
+    'business': '대량·기업 주문', 'contact': '고객 문의', 'quality': '품질·안전',
+}
+
+
+def read_product_guide(path):
+    # Parse only the known data assignment, never execute the JavaScript source.
+    source = path.read_text(encoding='utf-8')
+    match = re.fullmatch(r'\s*(?:/\*.*?\*/\s*)?var NANASHOP_PRODUCT_GUIDE = (\{.*\});\s*', source, re.DOTALL)
+    if not match:
+        raise ValueError(f'Unexpected product guide format: {path}')
+    guide = json.loads(match[1])
+    if not isinstance(guide.get('products'), list) or not isinstance(guide.get('policies'), dict):
+        raise ValueError(f'Product guide is missing products or policies: {path}')
+    return guide
+
+
+def manual_value(value):
+    """Render every nested value as escaped, readable static HTML."""
+    if isinstance(value, dict):
+        rows = ''.join(f'<div><dt>{esc(MANUAL_LABELS.get(key, key))}</dt><dd>{manual_value(item)}</dd></div>' for key, item in value.items())
+        return f'<dl class="manual-fields">{rows}</dl>'
+    if isinstance(value, list):
+        return '<ul>' + ''.join(f'<li>{manual_value(item)}</li>' for item in value) + '</ul>'
+    if value is None:
+        value = '별도 안내 없음'
+    elif isinstance(value, bool):
+        value = '예' if value else '아니요'
+    return f'<p>{esc(value)}</p>'
+
+
+def product_manual(guide, source_href, key):
+    products = guide['products']
+    links = ''.join(f'<a href="#product-{esc(product["sku"])}"><span>{esc(product["sku"])}</span>{esc(product["name"])}</a>' for product in products)
+    cards = []
+    for product in products:
+        faq = product.get('faq', {})
+        answers = list(faq.values()) if isinstance(faq, dict) else faq
+        cards.append(f'''<article class="manual-product" id="product-{esc(product['sku'])}">
+  <div class="manual-product-heading"><div><p class="manual-sku">{esc(product['sku'])}</p><h3>{esc(product['name'])}</h3></div><p class="manual-price">{product['price']:,}원</p></div>
+  {manual_value(product.get('specifications', {}))}
+  <div class="manual-faq"><h4>자주 묻는 질문·답변 안내</h4>{manual_value(answers)}</div>
+  <a class="manual-top" href="#products">제품 목록으로 ↑</a>
+</article>''')
+    policy_links = ''.join(f'<a href="#policy-{esc(name)}">{esc(POLICY_LABELS.get(name, name))}</a>' for name in guide['policies'])
+    policies = ''.join(f'<article class="manual-policy" id="policy-{esc(name)}"><h3>{esc(POLICY_LABELS.get(name, name))}</h3>{manual_value(policy)}</article>' for name, policy in guide['policies'].items())
+    return f'''<div class="manual-intro"><p>가상의 쇼핑몰 나나샵(NANASHOP) 고객응대 실습용 매뉴얼입니다. 제품 사양과 운영 정책을 찾아 답변 작성에 활용하세요.</p><nav class="manual-sections" aria-label="매뉴얼 목차"><a href="#products">제품 {len(products)}종</a><a href="#policies">배송·교환·환불 등 운영 정책</a><a href="#response-guide">답변 작성 기준</a></nav></div>
+<section class="manual-section" id="products"><h2>제품별 안내</h2><p class="manual-lead">제품을 선택하면 사양과 고객응대 안내로 이동합니다. 표시 가격은 부가세 포함, 배송비 별도입니다.</p><nav class="manual-product-links" aria-label="제품 바로가기">{links}</nav><div class="manual-products">{''.join(cards)}</div></section>
+<section class="manual-section" id="policies"><h2>운영 정책</h2><nav class="manual-policy-links" aria-label="운영 정책 바로가기">{policy_links}</nav>{policies}</section>
+<section class="manual-section manual-response" id="response-guide"><h2>답변 작성 기준</h2>{manual_value(guide.get('responseRules', {}))}</section>
+<aside class="manual-resources" aria-label="보조 자료"><h2>실습 자료</h2><p><a href="{source_href}">제품·고객응대 정보 원본 JS 열기</a><a href="../_downloads/recipe-{key}.zip" download="레시피_{key}_예제파일.zip">전체 자료 ZIP 다운로드</a></p></aside>'''
+
+
+def shell(title, body, *, detail=False, script=False, inline=False, manual=False):
     prefix = '../' if detail else './'
     site_assets = '../../assets/' if detail else '../assets/'
     home = '../../index.html' if detail else '../index.html'
@@ -55,16 +149,37 @@ def shell(title, body, *, detail=False, script=False, inline=False):
     }
   });
   </script>''' if inline else ''
+    manual_assets = '''
+  <style>
+  .manual-intro{padding:24px;background:#eaf1ff;border:1px solid #d5e2fc;border-radius:14px}
+  .manual-intro p{margin:0 0 16px}.manual-sections,.manual-policy-links{display:flex;flex-wrap:wrap;gap:10px}
+  .manual-sections a,.manual-policy-links a{padding:8px 13px;border-radius:8px;background:#fff;color:var(--blue);font-size:14px;font-weight:700;border:1px solid #d5e2fc}
+  .manual-section{margin:48px 0;scroll-margin-top:24px}.manual-section>h2{font-size:28px;letter-spacing:-.7px;margin:0 0 14px}.manual-lead{color:var(--muted);margin:0 0 22px}
+  .manual-product-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 26px}
+  .manual-product-links a{display:flex;flex-direction:column;padding:14px 16px;background:white;border:1px solid var(--line);border-radius:10px;font-size:14px;font-weight:700}
+  .manual-product-links span{color:var(--blue);font-size:11px;letter-spacing:.5px;margin-bottom:4px}.manual-product-links a:hover,.manual-policy-links a:hover{border-color:var(--blue)}
+  .manual-product,.manual-policy{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;margin:20px 0;scroll-margin-top:24px}
+  .manual-product-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;padding-bottom:20px;margin-bottom:10px;border-bottom:2px solid #eaf1ff}
+  .manual-product h3,.manual-policy h3{font-size:23px;line-height:1.4;margin:0;letter-spacing:-.5px}.manual-policy h3{margin-bottom:16px}
+  .manual-sku{color:var(--blue);font-size:12px;font-weight:800;letter-spacing:1px;margin:0 0 6px}.manual-price{font-size:24px;font-weight:800;color:var(--blue);white-space:nowrap;margin:0}
+  .manual-fields{margin:0}.manual-fields>div{display:grid;grid-template-columns:160px minmax(0,1fr);gap:22px;padding:14px 0;border-bottom:1px solid #edf1f7}.manual-fields>div:last-child{border-bottom:0}
+  .manual-fields dt{font-weight:700;color:#364d6e}.manual-fields dd{margin:0;min-width:0}.manual-fields p{margin:0}.manual-fields dd>.manual-fields>div{grid-template-columns:130px minmax(0,1fr)}
+  .manual-faq{margin-top:22px;background:#f5f7fb;border-radius:12px;padding:20px}.manual-faq h4{font-size:16px;margin:0 0 12px}.manual-faq ul{padding-left:20px;margin:0}.manual-faq li+li{margin-top:10px}.manual-faq p{margin:0}
+  .manual-top{display:inline-block;margin-top:18px;color:var(--blue);font-size:13px;font-weight:700}.manual-policy-links{margin:20px 0 24px}.manual-response{padding:26px;border:1px solid var(--line);border-radius:14px;background:#f0f4fa}
+  .manual-response>h2{font-size:22px}.manual-response .manual-fields{font-size:14px}.manual-resources{border-top:1px solid var(--line);padding-top:22px}.manual-resources h2{font-size:18px;margin:0 0 10px}.manual-resources p{display:flex;flex-wrap:wrap;gap:12px 24px;margin:0}.manual-resources a{color:var(--blue);text-decoration:underline;font-size:14px}
+  @media(max-width:700px){.manual-product-links{grid-template-columns:repeat(2,minmax(0,1fr))}.manual-product,.manual-policy{padding:22px}.manual-fields>div{grid-template-columns:130px minmax(0,1fr);gap:16px}.manual-product-heading{align-items:flex-start}.manual-price{font-size:21px}}
+  @media(max-width:480px){.manual-intro,.manual-product,.manual-policy,.manual-response{padding:18px}.manual-product-links{grid-template-columns:1fr}.manual-product-heading{flex-direction:column;gap:10px}.manual-product h3,.manual-policy h3{font-size:21px}.manual-fields>div,.manual-fields dd>.manual-fields>div{grid-template-columns:1fr;gap:6px}.manual-faq{padding:16px}.manual-section{margin:36px 0}.manual-section>h2{font-size:25px}}
+  </style>''' if manual else ''
     return f'''<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{esc(title)} · 아스트라 실습 자료</title>
-  <meta name="description" content="{'제품·고객응대 정보를 브라우저에서 읽고 아스트라 실습을 시작하세요.' if inline else '책의 레시피별 예제 파일을 내려받고 아스트라 실습을 시작하세요.'}">
+  <meta name="description" content="{'나나샵 제품 12종의 사양, 사용법, 배송·교환·반품·환불 정책을 읽고 고객응대 실습을 시작하세요.' if manual else '제품·고객응대 정보를 브라우저에서 읽고 아스트라 실습을 시작하세요.' if inline else '책의 레시피별 예제 파일을 내려받고 아스트라 실습을 시작하세요.'}">
   <link rel="stylesheet" href="{prefix}assets/recipe.css">
   <link rel="stylesheet" href="{site_assets}site.css">
-{f'  <script src="{prefix}assets/recipe.js" defer></script>' if script else ''}{inline_assets}
+{f'  <script src="{prefix}assets/recipe.js" defer></script>' if script else ''}{inline_assets}{manual_assets}
 </head>
 <body>
   <a class="skip" href="#content">본문 바로가기</a>
@@ -138,6 +253,8 @@ def build():
         title = titles.get(number, '')
         items = files.get(number, [])
         inline_items = [path for path in items if path.relative_to(RECIPES).as_posix() in inline_files]
+        manual_source = next((path for path in items if path.relative_to(RECIPES).as_posix() == '42/product-guide.js'), None)
+        guide = read_product_guide(manual_source) if manual_source else None
         full_title = f'레시피 {key}' + (f' · {title}' if title else '')
         search = ' '.join([full_title, *(path.name for path in items)])
         badge = f'{len(items)}개 파일' if items else '준비 중'
@@ -145,7 +262,7 @@ def build():
         cards.append(f'''<a class="recipe-card{' ready' if items else ''}" href="./{key}/index.html" data-recipe="{key}" data-available="{str(bool(items)).lower()}" data-search="{esc(search)}">
   <div class="card-top"><span class="number" aria-hidden="true">{key}</span><span class="badge">{badge}</span></div>
   <h2>{esc(full_title)}</h2><p>{esc(description)}</p>
-  <span class="card-link">{'실습 자료 바로 열기' if inline_items else '예제 파일 내려받기' if items else '레시피 페이지 보기'} <span aria-hidden="true">→</span></span>
+  <span class="card-link">{'제품·고객응대 매뉴얼 읽기' if guide else '실습 자료 바로 열기' if inline_items else '예제 파일 내려받기' if items else '레시피 페이지 보기'} <span aria-hidden="true">→</span></span>
 </a>''')
 
         rows = []
@@ -201,7 +318,15 @@ def build():
         body = f'''<header class="hero"><div class="wrap"><p class="eyebrow">RECIPE {key} / {'READ' if inline_items else 'DOWNLOAD'}</p>
 <h1>{esc(full_title)}</h1><p>{intro}</p></div></header>
 <main id="content" class="wrap content">{downloads}<nav class="pager" aria-label="다른 레시피">{previous}<a href="../index.html">전체 목록</a>{following}</nav></main>'''
-        page = shell(full_title, body, detail=True, inline=bool(inline_items))
+        if guide:
+            manual_title = '나나샵 제품·고객응대 매뉴얼'
+            source_href = '../' + quote(manual_source.relative_to(RECIPES).as_posix(), safe='/')
+            body = f'''<header class="hero"><div class="wrap"><p class="eyebrow">RECIPE {key} / PRODUCT &amp; CUSTOMER GUIDE</p>
+<h1>{manual_title}</h1><p>{esc(full_title)}</p></div></header>
+<main id="content" class="wrap content">{product_manual(guide, source_href, key)}<nav class="pager" aria-label="다른 레시피">{previous}<a href="../index.html">전체 목록</a>{following}</nav></main>'''
+            page = shell(manual_title, body, detail=True, manual=True)
+        else:
+            page = shell(full_title, body, detail=True, inline=bool(inline_items))
         write_page(RECIPES / key / 'index.html', page)
         # Preserve existing folders such as "recipe 04" and make them directly browsable too.
         for folder in sources.get(number, []):
