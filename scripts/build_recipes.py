@@ -27,22 +27,44 @@ def size_label(size):
     return f'{size / (1024 * 1024):.1f} MB' if size >= 1024 * 1024 else f'{max(1, round(size / 1024))} KB'
 
 
-def shell(title, body, *, detail=False, script=False):
+def shell(title, body, *, detail=False, script=False, inline=False):
     prefix = '../' if detail else './'
     site_assets = '../../assets/' if detail else '../assets/'
     home = '../../index.html' if detail else '../index.html'
     back_url = '../index.html'
     back_text = '← 예제 파일 전체 보기' if detail else '← 실습 사이트로'
+    inline_assets = '''
+  <style>
+  .inline-preview{margin:28px 0;padding:24px;background:#fff;border:1px solid var(--line);border-radius:14px}
+  .inline-preview h2{margin:0 0 12px;font-size:22px}
+  .inline-preview pre{margin:16px 0 0;max-height:70vh;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;font:14px/1.8 Consolas,"Malgun Gothic",monospace}
+  .inline-preview pre:focus-visible{outline:3px solid #edaa20;outline-offset:5px}
+  </style>''' if inline else ''
+    inline_script = '''
+  <script>
+  document.querySelectorAll('[data-inline-source]').forEach(async (preview) => {
+    const source = preview.querySelector('pre');
+    const status = preview.querySelector('[role="status"]');
+    try {
+      const response = await fetch(preview.dataset.inlineSource);
+      if (!response.ok) throw new Error('Source unavailable');
+      source.textContent = await response.text();
+      status.textContent = '아래에서 제품·고객응대 정보를 읽을 수 있습니다.';
+    } catch (error) {
+      status.textContent = '미리 보기를 불러오지 못했습니다. 위의 바로 열기 링크로 원문을 확인하세요.';
+    }
+  });
+  </script>''' if inline else ''
     return f'''<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{esc(title)} · 아스트라 실습 자료</title>
-  <meta name="description" content="책의 레시피별 예제 파일을 내려받고 아스트라 실습을 시작하세요.">
+  <meta name="description" content="{'제품·고객응대 정보를 브라우저에서 읽고 아스트라 실습을 시작하세요.' if inline else '책의 레시피별 예제 파일을 내려받고 아스트라 실습을 시작하세요.'}">
   <link rel="stylesheet" href="{prefix}assets/recipe.css">
   <link rel="stylesheet" href="{site_assets}site.css">
-{f'  <script src="{prefix}assets/recipe.js" defer></script>' if script else ''}
+{f'  <script src="{prefix}assets/recipe.js" defer></script>' if script else ''}{inline_assets}
 </head>
 <body>
   <a class="skip" href="#content">본문 바로가기</a>
@@ -55,7 +77,7 @@ def shell(title, body, *, detail=False, script=False):
     <a class="brand" href="{home}"><span>Astra</span> Playground</a>
     <a class="back" href="{back_url}">{back_text}</a>
   </div></nav>
-  {body}
+  {body}{inline_script}
   <footer class="foot"><div class="wrap">Astra Playground · 레시피별 예제 파일
     <p class="nana-copyright">Copyright (c) <a href="https://bhban.kr">반병현</a> all right reserved.</p>
   </div></footer>
@@ -67,6 +89,7 @@ def shell(title, body, *, detail=False, script=False):
 def build():
     config = json.loads((RECIPES / 'catalog.json').read_text(encoding='utf-8'))
     excluded_files = set(config.get('excluded_files', []))
+    inline_files = set(config.get('inline_files', []))
     titles = {}
     for key, title in config.get('titles', {}).items():
         if not str(key).isascii() or not str(key).isdigit() or int(key) < 1:
@@ -114,6 +137,7 @@ def build():
         key = f'{number:02}'
         title = titles.get(number, '')
         items = files.get(number, [])
+        inline_items = [path for path in items if path.relative_to(RECIPES).as_posix() in inline_files]
         full_title = f'레시피 {key}' + (f' · {title}' if title else '')
         search = ' '.join([full_title, *(path.name for path in items)])
         badge = f'{len(items)}개 파일' if items else '준비 중'
@@ -121,17 +145,29 @@ def build():
         cards.append(f'''<a class="recipe-card{' ready' if items else ''}" href="./{key}/index.html" data-recipe="{key}" data-available="{str(bool(items)).lower()}" data-search="{esc(search)}">
   <div class="card-top"><span class="number" aria-hidden="true">{key}</span><span class="badge">{badge}</span></div>
   <h2>{esc(full_title)}</h2><p>{esc(description)}</p>
-  <span class="card-link">{'예제 파일 내려받기' if items else '레시피 페이지 보기'} <span aria-hidden="true">→</span></span>
+  <span class="card-link">{'실습 자료 바로 열기' if inline_items else '예제 파일 내려받기' if items else '레시피 페이지 보기'} <span aria-hidden="true">→</span></span>
 </a>''')
 
         rows = []
+        previews = []
         for path in items:
             ext = path.suffix[1:].upper() or 'FILE'
             href = '../' + quote(path.relative_to(RECIPES).as_posix(), safe='/')
+            if path in inline_items:
+                label = '제품·고객응대 정보' if path.relative_to(RECIPES).as_posix() == '42/product-guide.js' else path.name
+                action = f'<a class="file-download" href="{href}">{esc(label)} 바로 열기 <span aria-hidden="true">→</span></a>'
+                previews.append(f'''<section class="inline-preview" data-inline-source="{href}" aria-label="{esc(label)} 미리 보기">
+  <h2>{esc(label)} 미리 보기</h2>
+  <p role="status">자료를 불러오는 중입니다. 위의 바로 열기 링크로 원문도 확인할 수 있습니다.</p>
+  <pre tabindex="0" aria-label="{esc(label)} 원문"></pre>
+  <noscript><p>위의 바로 열기 링크로 원문을 확인하세요.</p></noscript>
+</section>''')
+            else:
+                action = f'<a class="file-download" href="{href}" download="{esc(path.name)}" aria-label="{esc(path.name)} 다운로드">다운로드 <span aria-hidden="true">↓</span></a>'
             rows.append(f'''<article class="file">
   <span class="file-icon {esc(ext.lower())}" aria-hidden="true">{esc(ext)}</span>
   <div class="file-info"><h3>{esc(path.name)}</h3><p>{esc(ext)} · {size_label(path.stat().st_size)}</p></div>
-  <a class="file-download" href="{href}" download="{esc(path.name)}" aria-label="{esc(path.name)} 다운로드">다운로드 <span aria-hidden="true">↓</span></a>
+  {action}
 </article>''')
 
         archive = RECIPES / '_downloads' / f'recipe-{key}.zip'
@@ -148,10 +184,11 @@ def build():
                     info = zipfile.ZipInfo(arcname, date_time=(2026, 1, 1, 0, 0, 0))
                     info.compress_type = zipfile.ZIP_DEFLATED
                     bundle.writestr(info, path.read_bytes())
-            downloads = f'''<div class="section-title"><h2>예제 파일 <span aria-hidden="true">·</span> {len(items)}개</h2>
+            help_text = '바로 열기 링크로 원문을 확인하거나, 이 페이지에서 내용을 읽으며 실습하세요. 전체 자료는 ZIP 파일로도 받을 수 있습니다.' if inline_items else '필요한 파일을 각각 내려받거나, 전체 다운로드로 한 번에 받을 수 있습니다. ZIP 파일은 압축을 풀고 사용하세요.'
+            downloads = f'''<div class="section-title"><h2>{'실습 자료' if inline_items else '예제 파일'} <span aria-hidden="true">·</span> {len(items)}개</h2>
   <a class="download-all" href="../_downloads/recipe-{key}.zip" download="레시피_{key}_예제파일.zip">전체 다운로드 (ZIP) <span aria-hidden="true">↓</span></a></div>
 <div class="files">{''.join(rows)}</div>
-<p class="help">필요한 파일을 각각 내려받거나, 전체 다운로드로 한 번에 받을 수 있습니다. ZIP 파일은 압축을 풀고 사용하세요.</p>'''
+<p class="help">{help_text}</p>{''.join(previews)}'''
         else:
             if archive.exists():
                 archive.unlink()
@@ -160,10 +197,11 @@ def build():
         following_number = numbers[position + 1] if position + 1 < count else None
         previous = f'<a href="../{previous_number:02}/index.html">← 레시피 {previous_number:02}</a>' if previous_number is not None else '<span></span>'
         following = f'<a href="../{following_number:02}/index.html">레시피 {following_number:02} →</a>' if following_number is not None else '<span></span>'
-        body = f'''<header class="hero"><div class="wrap"><p class="eyebrow">RECIPE {key} / DOWNLOAD</p>
-<h1>{esc(full_title)}</h1><p>{'아래 파일을 내려받고 책의 순서에 따라 실습을 시작하세요.' if items else '이 레시피에서 사용하는 예제 파일을 모아 두는 곳입니다.'}</p></div></header>
+        intro = '제품·고객응대 정보를 바로 열어 읽고 책의 순서에 따라 실습을 시작하세요.' if inline_items else '아래 파일을 내려받고 책의 순서에 따라 실습을 시작하세요.' if items else '이 레시피에서 사용하는 예제 파일을 모아 두는 곳입니다.'
+        body = f'''<header class="hero"><div class="wrap"><p class="eyebrow">RECIPE {key} / {'READ' if inline_items else 'DOWNLOAD'}</p>
+<h1>{esc(full_title)}</h1><p>{intro}</p></div></header>
 <main id="content" class="wrap content">{downloads}<nav class="pager" aria-label="다른 레시피">{previous}<a href="../index.html">전체 목록</a>{following}</nav></main>'''
-        page = shell(full_title, body, detail=True)
+        page = shell(full_title, body, detail=True, inline=bool(inline_items))
         write_page(RECIPES / key / 'index.html', page)
         # Preserve existing folders such as "recipe 04" and make them directly browsable too.
         for folder in sources.get(number, []):

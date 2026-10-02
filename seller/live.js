@@ -1,15 +1,29 @@
 /* Local practice events only: no external orders, messages, or mail are sent. */
 var SellerLive = (function(){
-  var inquiryMs = 60000, orderMs = 15000, timer = null, busy = false;
+  var inquiryMs = 15000, orderMs = 3000, timer = null, busy = false;
   var initialStocks = {};
   PRODUCTS.forEach(function(p){ initialStocks[p.sku] = p.stock; });
   var initialOrders = ORDERS.slice();
 
   function getState(){
-    return Store.get('live', null) || {
+    var data = Store.get('live', null);
+    if(!data) return {
+      version:2,
       stocks:Object.assign({}, initialStocks), seedOrders:initialOrders.slice(),
       orders:[], events:[], sequence:0, nextInquiryAt:0, nextOrderAt:0
     };
+    // Keep saved replies/orders and consumption; grant the larger opening stock once.
+    if((data.version || 1)<2){
+      PRODUCTS.forEach(function(p){
+        var previous=data.stocks[p.sku];
+        data.stocks[p.sku]=Number.isFinite(previous)?previous+4000:initialStocks[p.sku];
+      });
+      data.version=2;
+      data.nextInquiryAt=Date.now()+inquiryMs;
+      data.nextOrderAt=Date.now()+orderMs;
+      Store.set('live',data);
+    }
+    return data;
   }
   function sync(data){
     data = data || getState();
@@ -78,7 +92,7 @@ var SellerLive = (function(){
       if(!data.nextOrderAt || data.nextOrderAt<=now) data.nextOrderAt=now+orderMs;
       Store.set('live',data); sync(data); updateClock();
     });
-    timer=setInterval(tick,1000);
+    timer=setInterval(tick,250);
   }
   function stop(){if(timer!==null)clearInterval(timer);timer=null;}
   function newInquiry(){

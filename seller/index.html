@@ -211,6 +211,7 @@
   <p class="nana-copyright">Copyright (c) <a href="https://bhban.kr">반병현</a> all right reserved.</p>
 </footer>
 
+<script src="../recipe/42/product-guide.js"></script>
 <script>
 /* =========================================================================
    나나샵 셀러 관리자 — 실습용 정적 웹앱
@@ -242,18 +243,18 @@ var NOW = new Date();
 
 /* ---------- 상품 ---------- */
 var PRODUCTS = [
-  { sku:'NS-1001', name:'우드 데스크 오거나이저',      price:29800, stock:42, safe:20, vendor:'V-01' },
-  { sku:'NS-1002', name:'접이식 노트북 스탠드',        price:24500, stock:8,  safe:25, vendor:'V-01' },
-  { sku:'NS-1003', name:'무선 충전 마우스패드',        price:38900, stock:61, safe:30, vendor:'V-02' },
-  { sku:'NS-1004', name:'황동 북엔드 2개 세트',        price:19800, stock:3,  safe:15, vendor:'V-03' },
-  { sku:'NS-1005', name:'린넨 파우치 M',               price:12900, stock:120,safe:40, vendor:'V-04' },
-  { sku:'NS-1006', name:'스테인리스 텀블러 470ml',     price:26500, stock:17, safe:35, vendor:'V-02' },
-  { sku:'NS-1007', name:'가죽 마우스패드 라지',        price:34000, stock:55, safe:25, vendor:'V-03' },
-  { sku:'NS-1008', name:'모니터 받침대 화이트',        price:45900, stock:12, safe:20, vendor:'V-01' },
-  { sku:'NS-1009', name:'케이블 정리 클립 12P',        price:8900,  stock:230,safe:60, vendor:'V-04' },
-  { sku:'NS-1010', name:'우드 폰 스탠드',              price:15900, stock:6,  safe:20, vendor:'V-03' },
-  { sku:'NS-1011', name:'데스크 매트 L 그레이',        price:52000, stock:33, safe:15, vendor:'V-02' },
-  { sku:'NS-1012', name:'미니 가습기 250ml',           price:31900, stock:0,  safe:18, vendor:'V-04' }
+  { sku:'NS-1001', name:'우드 데스크 오거나이저',      price:29800, stock:4042, safe:20, vendor:'V-01' },
+  { sku:'NS-1002', name:'접이식 노트북 스탠드',        price:24500, stock:4008, safe:25, vendor:'V-01' },
+  { sku:'NS-1003', name:'무선 충전 마우스패드',        price:38900, stock:4061, safe:30, vendor:'V-02' },
+  { sku:'NS-1004', name:'황동 북엔드 2개 세트',        price:19800, stock:4003, safe:15, vendor:'V-03' },
+  { sku:'NS-1005', name:'린넨 파우치 M',               price:12900, stock:4120, safe:40, vendor:'V-04' },
+  { sku:'NS-1006', name:'스테인리스 텀블러 470ml',     price:26500, stock:4017, safe:35, vendor:'V-02' },
+  { sku:'NS-1007', name:'가죽 마우스패드 라지',        price:34000, stock:4055, safe:25, vendor:'V-03' },
+  { sku:'NS-1008', name:'모니터 받침대 화이트',        price:45900, stock:4012, safe:20, vendor:'V-01' },
+  { sku:'NS-1009', name:'케이블 정리 클립 12P',        price:8900,  stock:4230, safe:60, vendor:'V-04' },
+  { sku:'NS-1010', name:'우드 폰 스탠드',              price:15900, stock:4006, safe:20, vendor:'V-03' },
+  { sku:'NS-1011', name:'데스크 매트 L 그레이',        price:52000, stock:4033, safe:15, vendor:'V-02' },
+  { sku:'NS-1012', name:'미니 가습기 250ml',           price:31900, stock:4000, safe:18, vendor:'V-04' }
 ];
 var VENDORS = [
   { id:'V-01', name:'대성목재산업',   manager:'김대성', email:'order@daesung-wood.co.kr',  tel:'031-555-0182', term:'발주 후 5영업일' },
@@ -320,30 +321,8 @@ function buildOrders(){
 var ORDERS = buildOrders();
 
 /* ---------- 고객 문의 ---------- */
-var INQ_SEED = [
-  {t:'배송',   c:'김*연', q:'어제 주문했는데 언제쯤 발송되나요? 이번 주 안에 받아볼 수 있을까요?'},
-  {t:'환불',   c:'양*솔', q:'황동 북엔드 받았는데 한쪽에 흠집이 있습니다. 환불 가능한가요?'},
-  {t:'상품문의',c:'최*빈', q:'가죽 마우스패드 라지 사이즈가 정확히 몇 cm인가요? 상세페이지에 안 나와 있어서요.'},
-  {t:'배송',   c:'권*태', q:'주소를 잘못 입력했습니다. 아직 발송 전이면 변경할 수 있나요?'},
-  {t:'교환',   c:'고*운', q:'색상이 사진이랑 너무 다릅니다. 다른 색으로 교환하고 싶어요.'},
-  {t:'단순문의',c:'임*택', q:'영업시간이 어떻게 되나요? 전화 상담도 가능한지 궁금합니다.'},
-  {t:'상품문의',c:'배*현', q:'우드 폰 스탠드가 아이패드도 거치되나요?'},
-  {t:'환불',   c:'류*안', q:'주문 취소했는데 환불이 아직 안 됐습니다. 며칠 걸리나요?'}
-];
-var INQ_QUEUE = [
-  {t:'배송',   c:'서*담', q:'오늘 주문하면 언제 도착하나요? 주말 배송도 되는지 알고 싶습니다.'},
-  {t:'상품문의',c:'노*별', q:'미니 가습기 물통 용량이 250ml 맞나요? 하루 몇 시간 쓸 수 있나요?'},
-  {t:'환불',   c:'표*린', q:'단순 변심으로 반품하려는데 배송비는 얼마나 부담해야 하나요?'},
-  {t:'배송',   c:'황*수', q:'송장번호가 조회가 안 됩니다. 확인 부탁드립니다.'},
-  {t:'교환',   c:'백*겸', q:'린넨 파우치를 M에서 L로 교환하고 싶습니다. 차액은 어떻게 결제하나요?'},
-  {t:'단순문의',c:'천*미', q:'대량 구매하면 할인이 있나요? 회사에서 30개 정도 필요합니다.'},
-  {t:'상품문의',c:'유*찬', q:'모니터 받침대 하중이 몇 kg까지 되나요? 27인치 모니터를 올리려고 합니다.'},
-  {t:'환불',   c:'심*보', q:'박스가 찌그러진 상태로 왔습니다. 제품은 멀쩡한데 이런 경우도 반품 되나요?'},
-  {t:'배송',   c:'장*목', q:'부재중이라 못 받았는데 재배송 요청은 어디서 하나요?'},
-  {t:'단순문의',c:'전*하', q:'세금계산서 발행이 가능한가요? 사업자 구매입니다.'},
-  {t:'상품문의',c:'맹*규', q:'텀블러 식기세척기 사용 가능한가요?'},
-  {t:'교환',   c:'설*완', q:'케이블 클립 12개 중 3개가 파손되어 왔습니다. 부분 교환 되나요?'}
-];
+var INQ_SEED = NANASHOP_PRODUCT_GUIDE.seedInquiries;
+var INQ_QUEUE = NANASHOP_PRODUCT_GUIDE.inquiries;
 
 /* ---------- 리뷰 ---------- */
 var REVIEWS = [
@@ -594,7 +573,7 @@ function buildPoMails(){
 /* ---------- 고객 문의 ---------- */
 function liveBanner(kind){
   var inquiry=kind==='inquiries';
-  return '<div class="live-banner"><span class="live-dot" aria-hidden="true"></span><b>'+(inquiry?'실시간 문의 수신 중':'실시간 주문 접수 중')+'</b><span>'+(inquiry?'약 1분마다 새 문의 도착':'약 15초마다 새 주문 · 재고 자동 반영')+'</span><span class="live-next">다음 '+(inquiry?'문의':'주문')+'까지 <strong id="'+(inquiry?'liveInquiryCountdown':'liveOrderCountdown')+'">—</strong></span></div>';
+  return '<div class="live-banner"><span class="live-dot" aria-hidden="true"></span><b>'+(inquiry?'실시간 문의 수신 중':'실시간 주문 접수 중')+'</b><span>'+(inquiry?'약 15초마다 새 문의 도착':'약 3초마다 새 주문 · 재고 자동 반영')+'</span><span class="live-next">다음 '+(inquiry?'문의':'주문')+'까지 <strong id="'+(inquiry?'liveInquiryCountdown':'liveOrderCountdown')+'">—</strong></span></div>';
 }
 function sortedInquiries(){
   var list=getInq();
@@ -656,7 +635,8 @@ function viewInq(){
   var list=sortedInquiries();
   var un=list.filter(function(i){return i.state==='미답변';}).length;
   var h='<div class="page-head"><div><h1>고객 문의</h1><p id="inqCounts">전체 '+list.length+'건 · 미답변 '+un+'건</p></div>'+
-        '<button class="btn" id="btnNewInq">새 문의 1건 받기</button></div>'+liveBanner('inquiries')+'<div class="card" id="inqList">';
+        '<div><a class="btn" href="../recipe/42/" target="_blank" rel="noopener">제품·고객응대 정보</a> '+
+        '<button class="btn" id="btnNewInq">새 문의 1건 받기</button></div></div>'+liveBanner('inquiries')+'<div class="card" id="inqList">';
   return h+list.map(inquiryCard).join('')+'</div>';
 }
 
@@ -752,7 +732,7 @@ document.getElementById('main').addEventListener('click',function(event){
   SellerLive.reply(id,text);
 });
 </script>
-<script src="./live.js"></script>
+<script src="./live.js?v=2"></script>
 <script>(function init(){ if(Store.get('session',null)) enterApp(); else show('loginView'); })();</script>
 </body>
 </html>
