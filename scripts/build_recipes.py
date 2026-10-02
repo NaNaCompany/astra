@@ -64,7 +64,9 @@ MANUAL_LABELS = {
     'certification': '인증·증명 자료', 'safeUse': '안전한 사용',
     'staticFacts': '매뉴얼에서 바로 확인', 'liveFacts': '판매자 센터에서 확인',
     'unknownFacts': '정보가 부족할 때', 'context': '상품·주문을 특정할 때',
-    'simulation': '실습 화면의 처리 범위', 'privacy': '개인정보 안내',
+    'simulation': '처리 결과 안내', 'privacy': '개인정보 안내',
+    'humanHandoff': '인간 담당자에게 전달',
+    'handoffInformation': '전달할 정보',
 }
 POLICY_LABELS = {
     'scope': '기본 운영 기준', 'shipping': '배송·재고', 'cancellation': '주문 취소·변경',
@@ -114,11 +116,11 @@ def product_manual(guide, source_href, key):
 </article>''')
     policy_links = ''.join(f'<a href="#policy-{esc(name)}">{esc(POLICY_LABELS.get(name, name))}</a>' for name in guide['policies'])
     policies = ''.join(f'<article class="manual-policy" id="policy-{esc(name)}"><h3>{esc(POLICY_LABELS.get(name, name))}</h3>{manual_value(policy)}</article>' for name, policy in guide['policies'].items())
-    return f'''<div class="manual-intro"><p>가상의 쇼핑몰 나나샵(NANASHOP) 고객응대 실습용 매뉴얼입니다. 제품 사양과 운영 정책을 찾아 답변 작성에 활용하세요.</p><nav class="manual-sections" aria-label="매뉴얼 목차"><a href="#products">제품 {len(products)}종</a><a href="#policies">배송·교환·환불 등 운영 정책</a><a href="#response-guide">답변 작성 기준</a></nav></div>
+    return f'''<div class="manual-intro"><p>나나샵(NANASHOP)의 제품 사양과 운영 정책을 확인하고 고객 문의에 답변하세요.</p><p><strong>매뉴얼의 정보만으로 대응하기 어려운 문의는 문의 내용과 함께 인간 담당자가 직접 처리하도록 정보를 전달하세요.</strong></p><nav class="manual-sections" aria-label="매뉴얼 목차"><a href="#products">제품 {len(products)}종</a><a href="#policies">배송·교환·환불 등 운영 정책</a><a href="#response-guide">답변 작성 기준</a></nav></div>
 <section class="manual-section" id="products"><h2>제품별 안내</h2><p class="manual-lead">제품을 선택하면 사양과 고객응대 안내로 이동합니다. 표시 가격은 부가세 포함, 배송비 별도입니다.</p><nav class="manual-product-links" aria-label="제품 바로가기">{links}</nav><div class="manual-products">{''.join(cards)}</div></section>
 <section class="manual-section" id="policies"><h2>운영 정책</h2><nav class="manual-policy-links" aria-label="운영 정책 바로가기">{policy_links}</nav>{policies}</section>
 <section class="manual-section manual-response" id="response-guide"><h2>답변 작성 기준</h2>{manual_value(guide.get('responseRules', {}))}</section>
-<aside class="manual-resources" aria-label="보조 자료"><h2>실습 자료</h2><p><a href="{source_href}">제품·고객응대 정보 원본 JS 열기</a><a href="../_downloads/recipe-{key}.zip" download="레시피_{key}_예제파일.zip">전체 자료 ZIP 다운로드</a></p></aside>'''
+<aside class="manual-resources" aria-label="보조 자료"><h2>보조 자료</h2><p><a href="{source_href}">제품·고객응대 정보 원본 JS 열기</a><a href="../_downloads/recipe-{key}.zip" download="레시피_{key}_예제파일.zip">전체 자료 ZIP 다운로드</a></p></aside>'''
 
 
 def shell(title, body, *, detail=False, script=False, inline=False, manual=False):
@@ -175,8 +177,8 @@ def shell(title, body, *, detail=False, script=False, inline=False, manual=False
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{esc(title)} · 아스트라 실습 자료</title>
-  <meta name="description" content="{'나나샵 제품 12종의 사양, 사용법, 배송·교환·반품·환불 정책을 읽고 고객응대 실습을 시작하세요.' if manual else '제품·고객응대 정보를 브라우저에서 읽고 아스트라 실습을 시작하세요.' if inline else '책의 레시피별 예제 파일을 내려받고 아스트라 실습을 시작하세요.'}">
+  <title>{esc(title)} · {'나나샵 고객응대' if manual else '아스트라 실습 자료'}</title>
+  <meta name="description" content="{'나나샵 제품 12종의 사양, 사용법, 배송·교환·반품·환불 정책을 확인하세요.' if manual else '제품·고객응대 정보를 브라우저에서 읽고 아스트라 실습을 시작하세요.' if inline else '책의 레시피별 예제 파일을 내려받고 아스트라 실습을 시작하세요.'}">
   <link rel="stylesheet" href="{prefix}assets/recipe.css">
   <link rel="stylesheet" href="{site_assets}site.css">
 {f'  <script src="{prefix}assets/recipe.js" defer></script>' if script else ''}{inline_assets}{manual_assets}
