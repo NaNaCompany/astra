@@ -111,36 +111,6 @@
   .note p:last-child{ margin-bottom:0 }
   .note ul{ margin:0; padding-left:19px; color:var(--ink2); font-size:13.8px; line-height:1.9 }
 
-  /* ---- 레시피 대조표 ---- */
-  .maptable{ background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden }
-  .maptable table{ border-collapse:collapse; width:100%; font-size:13.5px }
-  .maptable th,.maptable td{ text-align:left; padding:11px 14px; border-bottom:1px solid var(--line); vertical-align:top }
-  .maptable thead th{ background:#fafbfc; color:var(--ink2); font-size:12.5px; font-weight:700; letter-spacing:-.2px }
-  .maptable tbody tr:last-child td{ border-bottom:none }
-  .maptable tbody tr:hover{ background:#fafbfc }
-  .maptable td.num{
-    width:64px; white-space:nowrap; color:var(--ink3); font-weight:700;
-    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12.5px;
-  }
-  .maptable td.ttl{ color:var(--ink) }
-  .maptable td.wh{ width:210px }
-  .maptable a.where{ display:inline-block; font-size:12.5px; font-weight:700; color:var(--ink2) }
-  .maptable a.where:hover{ text-decoration:underline }
-  .maptable a.where::before{
-    content:""; display:inline-block; width:7px; height:7px; border-radius:2px;
-    margin-right:7px; vertical-align:1px;
-  }
-  .w-portal::before{background:var(--portal)} .w-seller::before{background:var(--seller)}
-  .w-sns::before{background:var(--sns)}       .w-shop::before{background:var(--shop)}
-  .w-vuln::before{background:var(--vuln)}
-  .w-dashboard::before{background:var(--dashboard)}
-  .maptable .pth{ display:block; color:var(--ink3); font-weight:400; font-size:11.5px;
-                  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; margin-left:14px }
-  @media (max-width:640px){
-    .maptable td.wh{ width:auto }
-    .maptable th,.maptable td{ padding:9px 10px; font-size:12.8px }
-  }
-
   .foot{ border-top:1px solid var(--line); padding:26px 0 50px; color:var(--ink3); font-size:12.5px }
   .foot b{ color:var(--ink2) }
   @media (max-width:640px){
@@ -281,29 +251,6 @@
         </div>
       </a>
 
-    </div>
-  </section>
-
-  <section class="section" style="padding-top:44px">
-    <div class="section-h"><h2>레시피별로 어디에 들어가나요?</h2><span>책을 펴 놓고 대조하세요</span></div>
-    <p class="section-lead">책의 레시피 번호 순입니다. 여기 없는 레시피는 실습 사이트를 쓰지 않습니다.</p>
-
-    <div class="maptable">
-      <table>
-        <thead><tr><th>번호</th><th>레시피</th><th>실습할 곳</th></tr></thead>
-        <tbody>
-          <tr><td class="num">29</td><td class="ttl">실제로 분석하는 웹앱 만들기</td>
-              <td class="wh"><a class="where w-dashboard" href="./dashboard/index.html">거래원장 분석 대시보드</a><span class="pth">거래 분석 · 시각화 · 결과 내보내기</span></td></tr>
-          <tr><td class="num">41</td><td class="ttl">[인사팀] 인사관리 시스템 화면을 엑셀로 다운로드하고 급여대장 자동 생성, 전송하기</td>
-              <td class="wh"><a class="where w-portal" href="./portal/index.html">나나랩 업무 포털</a><span class="pth">인사 · 근태 · 급여 조회</span></td></tr>
-          <tr><td class="num">42</td><td class="ttl">[CS팀] 고객 문의 자동으로 분류하고 답변 작성하기</td>
-              <td class="wh"><a class="where w-seller" href="./seller/index.html">나나샵 셀러 관리자</a><span class="pth">고객 문의</span></td></tr>
-          <tr><td class="num">43</td><td class="ttl">[물류팀] 일일 주문 확인하고 부족 품목 발주서 자동 생성해 주문 요청 기안 올리기</td>
-              <td class="wh"><a class="where w-seller" href="./seller/index.html">나나샵 셀러 관리자</a><span class="pth">주문 · 재고 · 발주</span><a class="where w-portal" href="./portal/index.html">나나랩 업무 포털</a><span class="pth">전자결재</span></td></tr>
-          <tr><td class="num">44</td><td class="ttl">[보안팀] 업무 시스템 보안 취약점 발견하고 해킹하기</td>
-              <td class="wh"><a class="where w-vuln" href="./vuln/index.html">나나 멤버스</a><span class="pth">홈·게시판·마이페이지·관리자</span></td></tr>
-        </tbody>
-      </table>
     </div>
   </section>
 
