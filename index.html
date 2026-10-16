@@ -56,7 +56,7 @@
   .section-h span{ color:var(--ink3); font-size:13px }
   .section-lead{ color:var(--ink2); font-size:14px; margin:0 0 26px; max-width:660px }
 
-  .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:18px }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr)); gap:18px }
   .card{
     background:var(--panel); border:1px solid var(--line); border-radius:14px;
     padding:0; overflow:hidden; display:flex; flex-direction:column;
@@ -133,17 +133,76 @@
   .download-sheet.front{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;color:#185bd8;font-size:13px;font-weight:800}
   @media(max-width:680px){.download-banner{padding:28px 24px;min-height:240px;gap:12px}.download-art{width:110px;transform:scale(.7);transform-origin:center}.download-banner p{max-width:220px}.download-banner h2{font-size:28px}}
   @media(max-width:440px){.download-art{display:none}.download-banner{min-height:255px}.download-banner p{max-width:none}}
+
+  /* Book launch banner: homepage only. */
+  .book-launch{
+    min-height:100svh; display:grid; grid-template-rows:1fr auto;
+    background:#fff; border-bottom:1px solid var(--line);
+  }
+  .book-launch__art{
+    display:flex; align-items:center; justify-content:center;
+    min-width:0; min-height:0; background:#faf9f8;
+  }
+  .book-launch__image{
+    display:block; width:100%; height:auto; max-height:calc(100svh - 104px);
+    object-fit:contain;
+  }
+  .book-launch__bar{
+    display:flex; justify-content:space-between; align-items:center; gap:24px;
+    width:100%; max-width:1440px; min-height:104px; margin:0 auto;
+    padding:20px clamp(24px,5vw,72px);
+  }
+  .book-launch__hint{margin:0; color:var(--ink2); font-size:14px}
+  .book-launch__actions{display:flex; align-items:center; justify-content:center; gap:24px; flex-shrink:0}
+  .book-launch__start{
+    display:inline-flex; align-items:center; justify-content:center; gap:28px;
+    min-height:48px; padding:12px 24px; border-radius:999px;
+    background:#ee183b; color:#fff; font-size:14px; font-weight:700;
+    transition:background .18s ease,transform .18s ease;
+  }
+  .book-launch__start:hover{background:#ca1030; transform:translateY(-2px)}
+  .book-launch__download{font-size:13px; font-weight:700; color:var(--ink2); padding:12px 0}
+  .book-launch__download:hover{color:#ce1535; text-decoration:underline; text-underline-offset:4px}
+  .book-launch__start:focus-visible,.book-launch__download:focus-visible{
+    outline:3px solid #12161c; outline-offset:5px;
+  }
+  #playground{scroll-margin-top:16px}
+  @media(prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+  @media(prefers-reduced-motion:reduce){.book-launch__start{transition:none}}
+  @media(max-width:760px){
+    .book-launch{min-height:0}
+    .book-launch__image{max-height:none}
+    .book-launch__bar{flex-direction:column; gap:14px; padding:22px 20px 26px; text-align:center}
+    .book-launch__hint{font-size:13px}
+    .book-launch__actions{flex-wrap:wrap; gap:10px 22px; width:100%}
+  }
 </style>
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
+<section class="book-launch" aria-label="스스로 일하는 GPT 아스트라 · 예제와 실습 자료">
+  <picture class="book-launch__art">
+    <source srcset="assets/astra-hero-paperback-v3.webp" type="image/webp">
+    <img class="book-launch__image" src="assets/astra-hero-paperback-v3.png"
+         alt="스스로 일하는 GPT 아스트라. 24시간 365일, 퇴근 없는 AI 직원. 업무 무인화 52가지 활용법."
+         width="1672" height="941" fetchpriority="high" decoding="async">
+  </picture>
+  <div class="book-launch__bar">
+    <p class="book-launch__hint">책에서 읽은 내용을, 이제 직접 해보세요.</p>
+    <nav class="book-launch__actions" aria-label="실습 바로가기">
+      <a class="book-launch__start" href="#playground">실습 시작하기 <span aria-hidden="true">↓</span></a>
+      <a class="book-launch__download" href="./recipe/index.html">예제 파일 바로가기 <span aria-hidden="true">↗</span></a>
+    </nav>
+  </div>
+</section>
+
 <div class="nana-site-header">
   <a class="nana-site-logo" href="https://nanalab.kr" aria-label="나나랩 홈페이지">
     <img src="https://nanalab.kr/logo.png" alt="NaNa Lab" width="2385" height="534" decoding="async">
   </a>
 </div>
 
-<header class="hero">
+<header class="hero" id="playground">
   <div class="wrap">
     <div class="eyebrow">ASTRA PLAYGROUND</div>
     <h1>Astra 실습을 위한<br><em>Playground</em></h1>
