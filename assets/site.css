@@ -59,7 +59,6 @@
 
 /* Leave room for branding in the full-height portal and seller views. */
 body > #loginView,
-body > #oauthView,
 body > #appView {
   min-height: calc(100vh - 160px);
 }
@@ -79,7 +78,6 @@ body > #appView {
   }
 
   body > #loginView,
-  body > #oauthView,
   body > #appView {
     min-height: calc(100vh - 152px);
   }

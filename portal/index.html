@@ -38,27 +38,9 @@
   .btn-primary:hover{background:var(--brand-d)}
   .btn-block{display:block;width:100%}
   .btn-sm{padding:6px 11px;font-size:13px}
-  .divider{display:flex;align-items:center;gap:10px;color:var(--ink3);font-size:12px;margin:20px 0}
-  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
   .login-hint{margin-top:22px;padding:12px 14px;background:#fffbe9;border:1px solid #f0e2b6;border-radius:var(--radius);font-size:12.5px;color:#6b5a1f;line-height:1.7}
   .login-hint b{color:#4a3d10}
   .err{color:var(--danger);font-size:13px;margin:-4px 0 12px;min-height:18px}
-
-  /* ---------- OAuth 동의 ---------- */
-  #oauthView{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#eceff4}
-  .oauth-card{width:100%;max-width:440px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:30px 32px;box-shadow:0 2px 14px rgba(20,30,50,.08)}
-  .oauth-brand{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;margin-bottom:22px}
-  .oauth-dot{width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#34a853,#fbbc05,#ea4335)}
-  .oauth-title{font-size:19px;font-weight:600;margin:0 0 6px;line-height:1.45}
-  .oauth-acct{display:flex;align-items:center;gap:9px;padding:9px 12px;border:1px solid var(--line);border-radius:20px;width:fit-content;margin:14px 0 20px;font-size:13px}
-  .oauth-avatar{width:22px;height:22px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
-  .scope-lead{font-size:13px;color:var(--ink2);margin:0 0 10px}
-  .scope{display:flex;gap:11px;padding:11px 2px;border-bottom:1px solid var(--line2);font-size:13.5px}
-  .scope:last-of-type{border-bottom:none}
-  .scope-ico{flex:0 0 20px;color:var(--ink3);text-align:center}
-  .scope-danger{color:var(--danger);font-weight:600}
-  .oauth-note{margin:18px 0 0;padding:11px 13px;background:#fdf3f2;border:1px solid #f3d5d1;border-radius:var(--radius);font-size:12.5px;color:#8c3a30;line-height:1.65}
-  .oauth-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
 
   /* ---------- 앱 셸 ---------- */
   #appView{min-height:100vh;display:flex;flex-direction:column}
@@ -193,57 +175,24 @@
     <h1 class="login-logo">나나랩 <span>업무 포털</span></h1>
     <p class="login-sub">NANALAB Groupware</p>
 
-    <form id="loginForm" autocomplete="off">
+    <form id="loginForm">
       <div class="field">
         <label for="loginId">아이디</label>
-        <input type="text" id="loginId" name="loginId" placeholder="아이디를 입력하세요">
+        <input type="text" id="loginId" name="loginId" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="아이디를 입력하세요" aria-describedby="loginErr">
       </div>
       <div class="field">
         <label for="loginPw">비밀번호</label>
-        <input type="password" id="loginPw" name="loginPw" placeholder="비밀번호를 입력하세요">
+        <input type="password" id="loginPw" name="loginPw" autocomplete="current-password" placeholder="비밀번호를 입력하세요" aria-describedby="loginErr">
       </div>
-      <div class="err" id="loginErr"></div>
+      <div class="err" id="loginErr" role="alert" aria-live="polite"></div>
       <button type="submit" class="btn btn-primary btn-block" id="btnLogin">로그인</button>
     </form>
-
-    <div class="divider">또는</div>
-    <button class="btn btn-block" id="btnOauth">나나 계정으로 계속하기</button>
 
     <div class="login-hint">
       <b>실습용 사이트입니다.</b> 실제 계정이 아니며 입력한 값은 어디로도 전송되지 않습니다.<br>
       인사팀 · 민정식 차장: 아이디 <b>min</b><br>
       물류팀 · 홍민석 대리: 아이디 <b>hong</b><br>
       공통 비밀번호 <b>nanalab1234</b>
-    </div>
-  </div>
-</div>
-
-<!-- ==================== 외부 계정 동의 ==================== -->
-<div id="oauthView" class="hidden">
-  <div class="oauth-card">
-    <div class="oauth-brand"><span class="oauth-dot"></span> 나나 계정</div>
-    <h2 class="oauth-title">나나랩 업무 포털이<br>회원님의 계정에 접근하려고 합니다</h2>
-
-    <div class="oauth-acct">
-      <span class="oauth-avatar">홍</span>
-      <span>hong@nanalab.kr</span>
-    </div>
-
-    <p class="scope-lead">나나랩 업무 포털에서 다음을 할 수 있게 됩니다.</p>
-    <div class="scope"><span class="scope-ico">✉</span><span>회원님의 이메일 주소 확인</span></div>
-    <div class="scope"><span class="scope-ico">👤</span><span>회원님의 이름과 프로필 사진 조회</span></div>
-    <div class="scope"><span class="scope-ico">📄</span><span>드라이브에 저장된 문서 <span class="scope-danger">읽기 및 수정</span></span></div>
-    <div class="scope"><span class="scope-ico">📅</span><span>캘린더 일정 <span class="scope-danger">조회 및 생성</span></span></div>
-    <div class="scope"><span class="scope-ico">📤</span><span>회원님의 이름으로 <span class="scope-danger">메일 발송</span></span></div>
-
-    <div class="oauth-note">
-      허용을 누르면 위 권한이 <b>한 번에 모두</b> 넘어갑니다. 권한을 하나씩 고를 수 없고,
-      나중에 되돌리려면 계정 설정에서 직접 연결을 해제해야 합니다.
-    </div>
-
-    <div class="oauth-actions">
-      <button class="btn" id="btnOauthDeny">취소</button>
-      <button class="btn btn-primary" id="btnOauthAllow">허용</button>
     </div>
   </div>
 </div>
@@ -441,7 +390,7 @@ var PAY = buildPayroll();
 
 /* ---------- 화면 전환 ---------- */
 function show(id){
-  ['loginView','oauthView','appView'].forEach(function(v){
+  ['loginView','appView'].forEach(function(v){
     document.getElementById(v).classList.toggle('hidden', v !== id);
   });
 }
@@ -469,11 +418,18 @@ function startSession(user, via){
   if(user.id === 'min') location.hash = '#/hr/pay/1';
   enterApp();
 }
-document.getElementById('loginForm').addEventListener('submit', function(e){
+function submitLogin(e){
   e.preventDefault();
-  var id = document.getElementById('loginId').value.trim();
-  var pw = document.getElementById('loginPw').value;
+  var idInput = document.getElementById('loginId');
+  var pwInput = document.getElementById('loginPw');
+  var id = idInput.value.trim();
+  var pw = pwInput.value;
   var err = document.getElementById('loginErr');
+  if(!id || !pw){
+    err.textContent = !id ? '아이디를 입력해 주세요.' : '비밀번호를 입력해 주세요.';
+    (!id ? idInput : pwInput).focus();
+    return;
+  }
   var user = USERS.find(function(account){ return account.id === id && account.pw === pw; });
   if(user){
     err.textContent = '';
@@ -481,16 +437,10 @@ document.getElementById('loginForm').addEventListener('submit', function(e){
   }else{
     err.textContent = '아이디 또는 비밀번호가 올바르지 않습니다.';
   }
-});
-document.getElementById('btnOauth').addEventListener('click', function(){ show('oauthView'); });
-document.getElementById('btnOauthDeny').addEventListener('click', function(){
-  show('loginView'); toast('연결이 취소되었습니다.');
-});
-document.getElementById('btnOauthAllow').addEventListener('click', function(){
-  Store.set('oauthGranted', true);
-  startSession(USERS[0], 'oauth');
-  toast('나나 계정 연결이 완료되었습니다. 5개 권한이 허용되었습니다.');
-});
+}
+// 버튼 클릭과 Enter 제출 모두 같은 로그인 처리를 사용합니다.
+document.getElementById('btnLogin').addEventListener('click', submitLogin);
+document.getElementById('loginForm').addEventListener('submit', submitLogin);
 document.getElementById('btnLogout').addEventListener('click', function(){
   Store.set('session', null);
   USER = null;
