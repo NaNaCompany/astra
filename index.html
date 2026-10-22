@@ -178,6 +178,8 @@
   }
 </style>
 <link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/author-sections.css">
+<script src="assets/author-sections.js" defer></script>
 </head>
 <body>
 <section class="book-launch" aria-label="스스로 일하는 GPT 아스트라 · 예제와 실습 자료">
@@ -318,7 +320,7 @@
       <h4>시작하기 전에</h4>
       <ul>
         <li>여기 있는 회사·사람·주문·리뷰는 모두 지어낸 것입니다. 실제 데이터가 아닙니다.</li>
-        <li>메일 발송, 결재 상신, 답글 등록은 <b>실제로 나가지 않습니다.</b> 각 사이트의 보낸함이나 목록에만 쌓입니다.</li>
+        <li>실습 사이트 안에서의 메일 발송, 결재 상신, 답글 등록은 <b>실제로 나가지 않습니다.</b> 각 사이트의 보낸함이나 목록에만 쌓입니다.</li>
         <li>각 사이트 안의 <b>초기화</b> 버튼으로 처음 상태로 되돌려 다시 실습할 수 있습니다.</li>
         <li>기록은 지금 쓰는 브라우저 안에만 남습니다. 다른 기기에서 열면 처음 상태로 보입니다.</li>
       </ul>
@@ -328,10 +330,49 @@
 
 </main>
 
+<div class="author-resources" data-author-resources data-resource-base="https://cdn.jsdelivr.net/gh/needleworm/needleworm.github.io@main/src/resource_forward/">
+  <section class="author-library" id="author-books" aria-labelledby="author-books-title">
+    <div class="author-wrap">
+      <header class="author-library__heading">
+        <div><p class="author-kicker">BOOKS BY THE AUTHOR</p><h2 id="author-books-title">한 권 다음의 가능성.</h2></div>
+        <p>AI부터 일과 삶까지,<br>반병현 작가의 다른 책을 만나보세요.</p>
+      </header>
+      <div class="shared-fragment books-embed" data-shared-fragment="books">
+        <p class="fragment-loading">책 목록을 불러오는 중입니다.</p>
+        <noscript><a href="https://bhban.kr/">작가 홈페이지에서 책 보기 ↗</a></noscript>
+      </div>
+      <div class="author-library__actions">
+        <a href="https://bhban.kr/" target="_blank" rel="noopener noreferrer">작가 홈페이지 <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </section>
+  <section class="author-connect" id="author-contact" aria-labelledby="author-contact-title">
+    <div class="author-wrap author-connect__grid">
+      <div class="author-connect__intro">
+        <p class="author-kicker">WORK WITH THE AUTHOR</p>
+        <h2 id="author-contact-title">우리 조직의 다음 일,<br><em>AI와 함께 바꿔볼까요?</em></h2>
+        <p class="author-connect__lead">기업 강연, AI 도입 교육, 업무 무인화 프로젝트.<br>지금 고민하고 있는 일을 들려주세요.</p>
+        <ul class="author-services">
+          <li><span>01</span>기업·기관 강연</li>
+          <li><span>02</span>실무 교육·워크숍</li>
+          <li><span>03</span>AI 도입·업무 무인화</li>
+        </ul>
+        <a class="author-profile-link" href="https://bhban.kr/" target="_blank" rel="noopener noreferrer">반병현 · NaNa Lab <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="author-contact-card">
+        <div class="shared-fragment contact-embed" data-shared-fragment="contact">
+          <p class="fragment-loading">문의 양식을 불러오는 중입니다.</p>
+          <noscript><a href="https://bhban.kr/">작가 홈페이지에서 문의하기 ↗</a></noscript>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
 <footer class="foot">
   <div class="wrap">
     <b>Astra Playground</b> · 실습 사이트와 예제 파일<br>
-    이 페이지의 모든 사이트는 교육 목적으로 만들어진 가상의 서비스입니다. 실재하는 기업·브랜드와 관련이 없습니다.
+    위 실습 서비스는 교육 목적으로 만들어진 가상의 서비스입니다. 실재하는 기업·브랜드와 관련이 없습니다.
     <p class="nana-copyright">Copyright (c) <a href="https://bhban.kr">반병현</a> all right reserved.</p>
   </div>
 </footer>
