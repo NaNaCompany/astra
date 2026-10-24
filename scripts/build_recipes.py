@@ -4,6 +4,7 @@ from urllib.parse import quote
 import html
 import json
 import re
+from publisher_tracking import complete_tracking
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,6 +18,7 @@ def esc(value):
 
 
 def write_page(path, content):
+    content = complete_tracking(content)
     if path.exists() and MARKER not in path.read_text(encoding='utf-8'):
         raise RuntimeError(f'Refusing to overwrite a non-generated page: {path}')
     path.parent.mkdir(parents=True, exist_ok=True)
